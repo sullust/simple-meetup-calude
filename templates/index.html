@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block content %}
+    <a class="button" href="{{ url_for('new_meetup') }}">+ New meetup</a>
+
+    {% if meetups %}
+        <ul class="meetup-list">
+            {% for m in meetups %}
+                <li class="meetup-card">
+                    <div class="meetup-date">{{ m.event_date }}</div>
+                    <div class="meetup-body">
+                        <h2><a href="{{ url_for('meetup_detail', meetup_id=m.id) }}">{{ m.title }}</a></h2>
+                        {% if m.details %}
+                            <p>{{ m.details }}</p>
+                        {% endif %}
+                        <p class="rsvp-count">{{ m.rsvp_count }} going</p>
+                    </div>
+                    <form method="post" action="{{ url_for('delete_meetup', meetup_id=m.id) }}">
+                        <button type="submit" class="delete">Delete</button>
+                    </form>
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p class="empty">No upcoming meetups. Create one!</p>
+    {% endif %}
+{% endblock %}
