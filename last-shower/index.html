@@ -235,7 +235,6 @@
 </style>
 </head>
 <body>
-
 <div class="atmosphere" aria-hidden="true">
   <div class="drop one"></div>
   <div class="drop two"></div>
@@ -256,7 +255,7 @@
   <div class="divider"></div>
 
   <div class="stamp">
-    <span class="stamp-day" id="stampDay">&nbsp;</span>
+    <span class="stamp-day" id="stampDay">Last logged</span>
     <span class="stamp-date" id="stampDate">&nbsp;</span>
   </div>
 
@@ -308,11 +307,10 @@
       return Math.round((b - a) / 86400000);
     }
 
-    function formatStamp(iso) {
-      var d = new Date(iso + "T00:00:00");
-      var dayName = d.toLocaleDateString(undefined, { weekday: "long" });
-      var dateStr = d.toLocaleDateString(undefined, { month: "short", day: "numeric", year: "numeric" });
-      return { dayName: dayName, dateStr: dateStr };
+    function relativeLabel(n) {
+      if (n <= 0) return "Today";
+      if (n === 1) return "Yesterday";
+      return n + " days ago";
     }
 
     function render() {
@@ -320,11 +318,8 @@
       var today = todayISO();
 
       if (!stored) {
-        countNumber.textContent = "—";
-        countUnit.textContent = "";
-        sinceLine.textContent = "No shower logged yet.";
-        stampDay.textContent = " ";
-        stampDate.textContent = " ";
+        stampDay.textContent = "Last logged";
+        stampDate.textContent = "Never";
         countDisplay.innerHTML =
           '<div class="count-row"><span class="count" id="countNumber">—</span></div>' +
           '<p class="since" id="sinceLine">No shower logged yet.</p>';
@@ -332,9 +327,8 @@
       }
 
       var n = daysBetween(stored, today);
-      var stamp = formatStamp(stored);
-      stampDay.textContent = stamp.dayName;
-      stampDate.textContent = stamp.dateStr;
+      stampDay.textContent = "Last logged";
+      stampDate.textContent = relativeLabel(n);
 
       if (n <= 0) {
         countDisplay.innerHTML = '<div class="count-row"><span class="count-word">Today</span></div>' +
@@ -346,7 +340,7 @@
         countDisplay.innerHTML =
           '<div class="count-row"><span class="count">' + n + '</span>' +
           '<span class="count-unit">days ago</span></div>' +
-          '<p class="since">Since ' + stamp.dayName + ', ' + stamp.dateStr + '.</p>';
+          '<p class="since">Might be time for another.</p>';
       }
     }
 
@@ -365,5 +359,6 @@
     render();
   })();
 </script>
+
 </body>
 </html>
