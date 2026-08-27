@@ -159,6 +159,14 @@
     font-size: 0.95rem;
   }
 
+  .example-tag {
+    display: inline-block;
+    font-size: 0.78rem;
+    font-style: italic;
+    color: var(--text-muted);
+    opacity: 0.8;
+  }
+
   .divider {
     height: 1px;
     background: var(--border);
@@ -266,6 +274,7 @@
 <script>
   (function () {
     var STORAGE_KEY = "lastShowerDate";
+    var EXAMPLE_ISO = "2026-08-20";
     var countNumber = document.getElementById("countNumber");
     var countUnit = document.getElementById("countUnit");
     var countDisplay = document.getElementById("countDisplay");
@@ -314,33 +323,27 @@
     }
 
     function render() {
-      var stored = readStored();
       var today = todayISO();
-
-      if (!stored) {
-        stampDay.textContent = "Last logged";
-        stampDate.textContent = "Never";
-        countDisplay.innerHTML =
-          '<div class="count-row"><span class="count" id="countNumber">—</span></div>' +
-          '<p class="since" id="sinceLine">No shower logged yet.</p>';
-        return;
-      }
+      var stored = readStored();
+      var isExample = !stored;
+      if (isExample) stored = EXAMPLE_ISO;
 
       var n = daysBetween(stored, today);
-      stampDay.textContent = "Last logged";
+      stampDay.textContent = isExample ? "Example" : "Last logged";
       stampDate.textContent = relativeLabel(n);
+      var suffix = isExample ? ' <span class="example-tag">(example — press the button below)</span>' : '';
 
       if (n <= 0) {
         countDisplay.innerHTML = '<div class="count-row"><span class="count-word">Today</span></div>' +
-          '<p class="since">You’re all fresh.</p>';
+          '<p class="since">You’re all fresh.' + suffix + '</p>';
       } else if (n === 1) {
         countDisplay.innerHTML = '<div class="count-row"><span class="count-word">Yesterday</span></div>' +
-          '<p class="since">One day and counting.</p>';
+          '<p class="since">One day and counting.' + suffix + '</p>';
       } else {
         countDisplay.innerHTML =
           '<div class="count-row"><span class="count">' + n + '</span>' +
           '<span class="count-unit">days ago</span></div>' +
-          '<p class="since">Might be time for another.</p>';
+          '<p class="since">Might be time for another.' + suffix + '</p>';
       }
     }
 
