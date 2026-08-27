@@ -1,0 +1,219 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Extra Pill</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700&family=Sora:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<style>
+  :root {
+    --bg: #f2f0f7;
+    --surface: #ffffff;
+    --text: #262138;
+    --text-muted: #6d6787;
+    --accent: #6c5ce8;
+    --accent-strong: #5541c7;
+    --accent-contrast: #f7f5ff;
+    --border: #e3e0f0;
+    --shadow: 255deg 25% 25%;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #131020;
+      --surface: #1d1930;
+      --text: #efeafb;
+      --text-muted: #a79fc4;
+      --accent: #a594fb;
+      --accent-strong: #cabdfd;
+      --accent-contrast: #1a1530;
+      --border: #2c2645;
+    }
+  }
+
+  :root[data-theme="dark"] {
+    --bg: #131020;
+    --surface: #1d1930;
+    --text: #efeafb;
+    --text-muted: #a79fc4;
+    --accent: #a594fb;
+    --accent-strong: #cabdfd;
+    --accent-contrast: #1a1530;
+    --border: #2c2645;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    min-height: 100vh;
+    background: var(--bg);
+    color: var(--text);
+    font-family: "Sora", ui-sans-serif, system-ui, sans-serif;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem 1.25rem;
+  }
+
+  main {
+    width: min(400px, 100%);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 26px;
+    padding: 2.75rem 2.25rem 2.5rem;
+    box-shadow: 0 1px 2px hsl(var(--shadow) / 0.06), 0 20px 44px -22px hsl(var(--shadow) / 0.4);
+    text-align: center;
+  }
+
+  .eyebrow {
+    margin: 0 0 1.75rem;
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+  }
+
+  .count {
+    font-family: "Bricolage Grotesque", "Sora", sans-serif;
+    font-weight: 700;
+    font-size: clamp(5rem, 22vw, 7.5rem);
+    line-height: 1;
+    letter-spacing: -0.03em;
+    color: var(--text);
+    font-variant-numeric: tabular-nums;
+    text-wrap: balance;
+  }
+
+  .count-label {
+    margin: 0.6rem 0 2.25rem;
+    font-size: 0.95rem;
+    color: var(--text-muted);
+  }
+
+  .add-btn {
+    appearance: none;
+    border: none;
+    width: 100%;
+    padding: 1.15rem 1.5rem;
+    border-radius: 999px;
+    background: var(--accent);
+    color: var(--accent-contrast);
+    font-family: "Sora", sans-serif;
+    font-size: 1.1rem;
+    font-weight: 600;
+    letter-spacing: 0.01em;
+    cursor: pointer;
+    transition: background-color 0.15s ease, transform 0.08s ease;
+  }
+
+  .add-btn:hover { background: var(--accent-strong); }
+  .add-btn:active { transform: scale(0.97); }
+
+  .add-btn:focus-visible {
+    outline: 3px solid var(--accent-strong);
+    outline-offset: 3px;
+  }
+
+  .reset-row {
+    margin-top: 1.5rem;
+  }
+
+  .reset-btn {
+    appearance: none;
+    border: none;
+    background: none;
+    padding: 0.5rem 0.9rem;
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-size: 0.8rem;
+    letter-spacing: 0.02em;
+    color: var(--text-muted);
+    cursor: pointer;
+    border-radius: 8px;
+    transition: color 0.15s ease, background-color 0.15s ease;
+  }
+
+  .reset-btn:hover {
+    color: var(--text);
+    background: var(--bg);
+  }
+
+  .reset-btn:focus-visible {
+    outline: 2px solid var(--accent-strong);
+    outline-offset: 2px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .add-btn, .reset-btn { transition: none; }
+  }
+</style>
+</head>
+<body>
+<main>
+  <p class="eyebrow">Extra Pill</p>
+
+  <div class="count" id="count" aria-live="polite">0</div>
+  <p class="count-label" id="countLabel">presses</p>
+
+  <button class="add-btn" id="addBtn" type="button">+1</button>
+
+  <div class="reset-row">
+    <button class="reset-btn" id="resetBtn" type="button">Reset to 0</button>
+  </div>
+</main>
+
+<script>
+  (function () {
+    var STORAGE_KEY = "extraPillCount";
+    var countEl = document.getElementById("count");
+    var labelEl = document.getElementById("countLabel");
+    var addBtn = document.getElementById("addBtn");
+    var resetBtn = document.getElementById("resetBtn");
+
+    function readCount() {
+      try {
+        var raw = localStorage.getItem(STORAGE_KEY);
+        var n = parseInt(raw, 10);
+        return Number.isFinite(n) && n >= 0 ? n : 0;
+      } catch (e) {
+        return 0;
+      }
+    }
+
+    function writeCount(n) {
+      try {
+        localStorage.setItem(STORAGE_KEY, String(n));
+      } catch (e) {
+        /* private mode / storage blocked: state just won't survive reload */
+      }
+    }
+
+    var count = readCount();
+
+    function render() {
+      countEl.textContent = String(count);
+      labelEl.textContent = count === 1 ? "press" : "presses";
+    }
+
+    addBtn.addEventListener("click", function () {
+      count += 1;
+      writeCount(count);
+      render();
+    });
+
+    resetBtn.addEventListener("click", function () {
+      count = 0;
+      writeCount(count);
+      render();
+    });
+
+    render();
+  })();
+</script>
+
+</body>
+</html>
