@@ -1,0 +1,691 @@
+<title>The Meetup Board</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@600;700;800&family=Vollkorn:ital,wght@0,400;0,600;1,400&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+<style id="app-style">
+  :root {
+    --board: #1F3A34;
+    --board-2: #24443C;
+    --paper: #F7F1E2;
+    --paper-2: #EFE6CF;
+    --ink: #20241F;
+    --ink-soft: #5B5D50;
+    --pin: #E0A62E;
+    --pin-deep: #B9841C;
+    --line: rgba(32, 36, 31, 0.22);
+    --danger: #B23A2E;
+    --focus: #2F6F62;
+    --shadow: rgba(15, 26, 23, 0.35);
+
+    --font-display: "Big Shoulders Display", "Arial Narrow", sans-serif;
+    --font-body: "Vollkorn", Georgia, "Times New Roman", serif;
+    --font-mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, monospace;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --board: #0E1A17;
+      --board-2: #12211D;
+      --paper: #2A2A22;
+      --paper-2: #232319;
+      --ink: #EFE7D2;
+      --ink-soft: #B7AF98;
+      --pin: #E7B44C;
+      --pin-deep: #F0C468;
+      --line: rgba(239, 231, 210, 0.18);
+      --danger: #E0685A;
+      --focus: #5FAE9F;
+      --shadow: rgba(0, 0, 0, 0.55);
+    }
+  }
+
+  :root[data-theme="dark"] {
+    --board: #0E1A17;
+    --board-2: #12211D;
+    --paper: #2A2A22;
+    --paper-2: #232319;
+    --ink: #EFE7D2;
+    --ink-soft: #B7AF98;
+    --pin: #E7B44C;
+    --pin-deep: #F0C468;
+    --line: rgba(239, 231, 210, 0.18);
+    --danger: #E0685A;
+    --focus: #5FAE9F;
+    --shadow: rgba(0, 0, 0, 0.55);
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background:
+      radial-gradient(circle at 8px 8px, rgba(0,0,0,0.10) 1px, transparent 1.4px),
+      radial-gradient(circle at 26px 22px, rgba(255,255,255,0.05) 1px, transparent 1.4px),
+      linear-gradient(160deg, var(--board), var(--board-2));
+    background-size: 34px 34px, 34px 34px, cover;
+    color: var(--ink);
+    font-family: var(--font-body);
+    min-height: 100vh;
+  }
+
+  a { color: inherit; }
+
+  button, input, textarea { font-family: inherit; }
+
+  .board {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 2.5rem 1.25rem 5rem;
+  }
+
+  .masthead {
+    text-align: left;
+    color: #F7F1E2;
+    margin-bottom: 2rem;
+  }
+
+  .eyebrow {
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--pin);
+    margin: 0 0 0.5rem;
+  }
+
+  .masthead h1 {
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: clamp(2.4rem, 7vw, 3.4rem);
+    line-height: 0.95;
+    letter-spacing: 0.01em;
+    margin: 0 0 0.5rem;
+    text-wrap: balance;
+  }
+
+  .masthead .tagline {
+    font-style: italic;
+    color: rgba(247, 241, 226, 0.75);
+    margin: 0;
+    font-size: 1.05rem;
+  }
+
+  .toolbar {
+    margin-bottom: 1.25rem;
+  }
+
+  .post-btn, .ghost-btn {
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    padding: 0.75rem 1.2rem;
+    border-radius: 3px;
+    cursor: pointer;
+    border: 1px solid transparent;
+  }
+
+  .post-btn {
+    background: var(--pin);
+    color: #241a06;
+    box-shadow: 0 2px 0 var(--pin-deep);
+  }
+
+  .post-btn:hover { background: var(--pin-deep); }
+  .post-btn:active { box-shadow: none; transform: translateY(2px); }
+
+  .ghost-btn {
+    background: transparent;
+    color: #F7F1E2;
+    border-color: rgba(247, 241, 226, 0.4);
+  }
+
+  .ghost-btn:hover { border-color: #F7F1E2; }
+
+  :is(button, input, textarea, a):focus-visible {
+    outline: 2px solid var(--focus);
+    outline-offset: 2px;
+  }
+
+  .composer {
+    background: var(--paper);
+    color: var(--ink);
+    border-radius: 4px;
+    padding: 1.25rem 1.25rem 1rem;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 10px 24px var(--shadow);
+  }
+
+  .field-row { margin-bottom: 0.9rem; }
+
+  .field-row label {
+    display: block;
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+    margin-bottom: 0.35rem;
+  }
+
+  .field-row .optional { text-transform: none; letter-spacing: 0; }
+
+  .composer input[type="text"],
+  .composer input[type="date"],
+  .composer textarea {
+    width: 100%;
+    padding: 0.55rem 0.65rem;
+    border: 1px solid var(--line);
+    border-radius: 3px;
+    background: var(--paper-2);
+    color: var(--ink);
+    font-size: 1rem;
+    font-family: var(--font-body);
+  }
+
+  .composer textarea { resize: vertical; }
+
+  .form-error {
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    color: var(--danger);
+    margin: 0 0 0.75rem;
+  }
+
+  .composer-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.6rem;
+  }
+  .composer-actions .ghost-btn { color: var(--ink-soft); border-color: var(--line); }
+  .composer-actions .ghost-btn:hover { border-color: var(--ink-soft); }
+
+  .banner {
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+    color: #241a06;
+    background: var(--pin);
+    padding: 0.6rem 0.9rem;
+    border-radius: 3px;
+    margin-bottom: 1.25rem;
+  }
+
+  .grid {
+    display: flex;
+    flex-direction: column;
+    gap: 1.6rem;
+  }
+
+  .empty-board {
+    font-style: italic;
+    color: rgba(247, 241, 226, 0.7);
+    text-align: center;
+    padding: 3rem 1rem;
+  }
+
+  .ticket {
+    position: relative;
+    background: var(--paper);
+    color: var(--ink);
+    border-radius: 4px;
+    box-shadow: 0 12px 26px var(--shadow);
+    transform: rotate(var(--tilt, 0deg));
+    transition: transform 0.15s ease;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .grid > .ticket:nth-child(3n+1) { --tilt: -0.6deg; }
+    .grid > .ticket:nth-child(3n+2) { --tilt: 0.5deg; }
+    .grid > .ticket:nth-child(3n+3) { --tilt: -0.3deg; }
+    .ticket:hover { transform: rotate(0deg); }
+  }
+
+  .ticket::before {
+    content: "";
+    position: absolute;
+    top: -7px;
+    left: 1.75rem;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 35% 30%, #fff6d8, var(--pin) 60%, var(--pin-deep));
+    box-shadow: 0 2px 3px var(--shadow);
+  }
+
+  .ticket-remove {
+    position: absolute;
+    top: 0.6rem;
+    right: 0.7rem;
+    width: 1.6rem;
+    height: 1.6rem;
+    border: none;
+    background: transparent;
+    color: var(--ink-soft);
+    font-size: 1.2rem;
+    line-height: 1;
+    cursor: pointer;
+    border-radius: 50%;
+  }
+  .ticket-remove:hover { color: var(--danger); background: rgba(178, 58, 46, 0.1); }
+
+  .ticket-main {
+    display: flex;
+    gap: 1.1rem;
+    padding: 1.5rem 2.4rem 1.1rem 1.5rem;
+  }
+
+  .ticket-date {
+    flex: none;
+    width: 4.2rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    border-right: 2px dashed var(--line);
+    padding-right: 1rem;
+  }
+
+  .ticket-date .wd, .ticket-date .mo {
+    font-family: var(--font-mono);
+    font-size: 0.68rem;
+    letter-spacing: 0.06em;
+    color: var(--ink-soft);
+  }
+
+  .ticket-date .dd {
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: 2.1rem;
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
+    margin: 0.1rem 0;
+  }
+
+  .ticket-info { flex: 1; min-width: 0; }
+
+  .ticket-info h2 {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 1.5rem;
+    margin: 0 0 0.3rem;
+    text-wrap: balance;
+    line-height: 1.05;
+  }
+
+  .ticket-info .details {
+    margin: 0;
+    color: var(--ink-soft);
+    white-space: pre-wrap;
+    font-size: 0.98rem;
+    line-height: 1.45;
+  }
+
+  .stub {
+    border-top: 2px dashed var(--line);
+    background: var(--paper-2);
+    border-radius: 0 0 4px 4px;
+    padding: 0.9rem 1.5rem 1.1rem;
+  }
+
+  .stub-head {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+    margin-bottom: 0.6rem;
+  }
+
+  .stub-head .count {
+    font-size: 0.95rem;
+    color: var(--ink);
+    font-weight: 700;
+  }
+
+  .pill-list {
+    list-style: none;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    margin: 0 0 0.7rem;
+    padding: 0;
+  }
+
+  .pill {
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+    background: var(--paper);
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    padding: 0.25rem 0.4rem 0.25rem 0.7rem;
+    font-size: 0.85rem;
+  }
+
+  .pill-x {
+    border: none;
+    background: transparent;
+    color: var(--ink-soft);
+    cursor: pointer;
+    font-size: 0.95rem;
+    line-height: 1;
+    width: 1.15rem;
+    height: 1.15rem;
+    border-radius: 50%;
+  }
+  .pill-x:hover { color: var(--danger); background: rgba(178, 58, 46, 0.12); }
+
+  .rsvp-form {
+    display: flex;
+    gap: 0.5rem;
+  }
+
+  .rsvp-form input {
+    flex: 1;
+    min-width: 0;
+    padding: 0.5rem 0.65rem;
+    border: 1px solid var(--line);
+    border-radius: 3px;
+    background: var(--paper);
+    color: var(--ink);
+    font-size: 0.95rem;
+  }
+
+  .rsvp-form button {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    padding: 0 1rem;
+    border: 1px solid var(--focus);
+    color: var(--focus);
+    background: transparent;
+    border-radius: 3px;
+    cursor: pointer;
+  }
+  .rsvp-form button:hover { background: var(--focus); color: var(--paper); }
+
+  .hidden-when-readonly[data-readonly="true"] { display: none !important; }
+
+  footer.credit {
+    text-align: center;
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    color: rgba(247, 241, 226, 0.4);
+    margin-top: 2.5rem;
+  }
+</style>
+
+<div id="boardRoot"></div>
+
+<script id="app-data" type="application/json">{"meetups":[]}</script>
+
+<script id="app-logic">
+(function () {
+  "use strict";
+
+  function escapeHtml(s) {
+    return String(s).replace(/[&<>"']/g, function (c) {
+      return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c];
+    });
+  }
+
+  function genId(prefix) {
+    return prefix + Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
+  }
+
+  function todayStr() {
+    var d = new Date();
+    var local = new Date(d.getTime() - d.getTimezoneOffset() * 60000);
+    return local.toISOString().slice(0, 10);
+  }
+
+  function formatDateParts(iso) {
+    var d = new Date(iso + "T00:00:00");
+    return {
+      weekday: d.toLocaleDateString("en-US", { weekday: "short" }).toUpperCase(),
+      month: d.toLocaleDateString("en-US", { month: "short" }).toUpperCase(),
+      day: d.getDate()
+    };
+  }
+
+  function upcomingMeetups(state) {
+    var t = todayStr();
+    return state.meetups
+      .filter(function (m) { return m.date >= t; })
+      .slice()
+      .sort(function (a, b) {
+        return a.date < b.date ? -1 : a.date > b.date ? 1 : (a.createdAt < b.createdAt ? -1 : 1);
+      });
+  }
+
+  function ticketCard(m, readOnly) {
+    var dp = formatDateParts(m.date);
+    var count = m.rsvps.length;
+    var headText = count === 0 ? "Nobody's in yet" : (count + " " + (count === 1 ? "person" : "people") + " in");
+    var roAttr = readOnly ? "true" : "false";
+    var pills = m.rsvps.map(function (r) {
+      return '<li class="pill"><span>' + escapeHtml(r.name) + '</span>' +
+        '<button type="button" class="pill-x hidden-when-readonly" data-readonly="' + roAttr + '" data-action="remove-rsvp" data-meetup="' + m.id + '" data-rsvp="' + r.id + '" aria-label="Remove ' + escapeHtml(r.name) + '">&times;</button></li>';
+    }).join("");
+    return (
+      '<article class="ticket">' +
+        '<button type="button" class="ticket-remove hidden-when-readonly" data-readonly="' + roAttr + '" data-action="remove-meetup" data-meetup="' + m.id + '" aria-label="Take down ' + escapeHtml(m.title) + '">&times;</button>' +
+        '<div class="ticket-main">' +
+          '<div class="ticket-date"><span class="wd">' + dp.weekday + '</span><span class="dd">' + dp.day + '</span><span class="mo">' + dp.month + '</span></div>' +
+          '<div class="ticket-info"><h2>' + escapeHtml(m.title) + '</h2>' +
+            (m.details ? '<p class="details">' + escapeHtml(m.details) + '</p>' : '') +
+          '</div>' +
+        '</div>' +
+        '<div class="stub">' +
+          '<div class="stub-head"><span class="count">' + headText + '</span></div>' +
+          '<ul class="pill-list">' + pills + '</ul>' +
+          '<form class="rsvp-form hidden-when-readonly" data-readonly="' + roAttr + '" data-action="add-rsvp" data-meetup="' + m.id + '">' +
+            '<input type="text" name="name" placeholder="Your name" maxlength="60" autocomplete="off" required>' +
+            '<button type="submit">I\'m in</button>' +
+          '</form>' +
+        '</div>' +
+      '</article>'
+    );
+  }
+
+  function shellHtml(state, opts) {
+    opts = opts || {};
+    var composerOpen = !!opts.composerOpen;
+    var readOnly = !!opts.readOnly;
+    var list = upcomingMeetups(state);
+    var gridHtml = list.length
+      ? list.map(function (m) { return ticketCard(m, readOnly); }).join("")
+      : '<p class="empty-board">The board&rsquo;s empty. Be the first to pin something up.</p>';
+
+    return (
+      '<div class="board">' +
+        '<header class="masthead">' +
+          '<p class="eyebrow">Community Notices</p>' +
+          '<h1>The Meetup Board</h1>' +
+          '<p class="tagline">Pin up a plan. See who&rsquo;s in.</p>' +
+        '</header>' +
+        (readOnly
+          ? '<div class="banner">You can browse the board, but this view can&rsquo;t post or RSVP.</div>'
+          : '<div class="toolbar"><button type="button" class="post-btn" data-action="toggle-composer">+ Post a meetup</button></div>' +
+            '<section class="composer" ' + (composerOpen ? "" : "hidden") + '>' +
+              '<form id="composerForm">' +
+                '<div class="field-row"><label for="f-title">What&rsquo;s happening</label>' +
+                  '<input type="text" id="f-title" name="title" placeholder="Trivia night at The Hearth" maxlength="120" required></div>' +
+                '<div class="field-row"><label for="f-date">When</label>' +
+                  '<input type="date" id="f-date" name="date" min="' + todayStr() + '" required></div>' +
+                '<div class="field-row"><label for="f-details">Details <span class="optional">(optional)</span></label>' +
+                  '<textarea id="f-details" name="details" rows="3" placeholder="Where to meet, what to bring..."></textarea></div>' +
+                '<p class="form-error" id="composerError" hidden></p>' +
+                '<div class="composer-actions">' +
+                  '<button type="button" class="ghost-btn" data-action="cancel-composer">Cancel</button>' +
+                  '<button type="submit" class="post-btn">Pin it up</button>' +
+                '</div>' +
+              '</form>' +
+            '</section>'
+        ) +
+        '<main class="grid">' + gridHtml + '</main>' +
+      '</div>' +
+      '<footer class="credit">a board for the people who show up</footer>'
+    );
+  }
+
+  var STATE = JSON.parse(document.getElementById("app-data").textContent);
+  var composerOpen = false;
+  var readOnly = false;
+  var artifactApi = null;
+
+  function render() {
+    document.getElementById("boardRoot").innerHTML = shellHtml(STATE, { composerOpen: composerOpen, readOnly: readOnly });
+  }
+
+  function buildDocument(state) {
+    var styleTag = document.getElementById("app-style").outerHTML;
+    var logicTag = document.getElementById("app-logic").outerHTML;
+    var json = JSON.stringify(state).replace(/</g, "\\u003c");
+    return (
+      "<!doctype html>\n" +
+      '<html lang="en">\n' +
+      "<head>\n" +
+      '<meta charset="utf-8">\n' +
+      '<meta name="viewport" content="width=device-width, initial-scale=1">\n' +
+      "<title>The Meetup Board</title>\n" +
+      '<link rel="preconnect" href="https://fonts.googleapis.com">\n' +
+      '<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>\n' +
+      '<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@600;700;800&family=Vollkorn:ital,wght@0,400;0,600;1,400&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">\n' +
+      styleTag + "\n" +
+      "</head>\n" +
+      "<body>\n" +
+      '<div id="boardRoot">' + shellHtml(state, {}) + "</div>\n" +
+      '<script id="app-data" type="application/json">' + json + "<\/script>\n" +
+      logicTag + "\n" +
+      "</body>\n" +
+      "</html>"
+    );
+  }
+
+  function persist() {
+    if (readOnly) return;
+    if (!artifactApi) return;
+    artifactApi.publish(buildDocument(STATE)).catch(function (err) {
+      var code = err && err.code;
+      if (code === "not_writer" || code === "not_granted" || code === "consent_required" || code === "capability_disabled" || code === "not_declared") {
+        readOnly = true;
+        render();
+      } else if (code === "conflict") {
+        // a newer version is already replacing this view
+      } else {
+        console.error("Could not save to the board:", err);
+      }
+    });
+  }
+
+  function mutate(fn) {
+    fn(STATE);
+    render();
+    persist();
+  }
+
+  document.addEventListener("click", function (e) {
+    var btn = e.target.closest("[data-action]");
+    if (!btn) return;
+    var action = btn.dataset.action;
+
+    if (action === "toggle-composer") {
+      composerOpen = !composerOpen;
+      render();
+      if (composerOpen) {
+        setTimeout(function () {
+          var el = document.getElementById("f-title");
+          if (el) el.focus();
+        }, 0);
+      }
+    } else if (action === "cancel-composer") {
+      composerOpen = false;
+      render();
+    } else if (action === "remove-meetup") {
+      var mid = btn.dataset.meetup;
+      var m = STATE.meetups.find(function (x) { return x.id === mid; });
+      if (!m) return;
+      if (!confirm('Take "' + m.title + '" off the board?')) return;
+      mutate(function (state) {
+        state.meetups = state.meetups.filter(function (x) { return x.id !== mid; });
+      });
+    } else if (action === "remove-rsvp") {
+      var mmid = btn.dataset.meetup, rid = btn.dataset.rsvp;
+      mutate(function (state) {
+        var mm = state.meetups.find(function (x) { return x.id === mmid; });
+        if (!mm) return;
+        mm.rsvps = mm.rsvps.filter(function (r) { return r.id !== rid; });
+      });
+    }
+  });
+
+  document.addEventListener("submit", function (e) {
+    var form = e.target;
+
+    if (form.id === "composerForm") {
+      e.preventDefault();
+      var title = form.elements["title"].value.trim();
+      var date = form.elements["date"].value;
+      var details = form.elements["details"].value.trim();
+      var errEl = document.getElementById("composerError");
+
+      if (!title || !date) {
+        errEl.textContent = "Add a title and a date.";
+        errEl.hidden = false;
+        return;
+      }
+      if (date < todayStr()) {
+        errEl.textContent = "Pick today or a date in the future.";
+        errEl.hidden = false;
+        return;
+      }
+
+      mutate(function (state) {
+        state.meetups.push({
+          id: genId("m"),
+          title: title,
+          details: details,
+          date: date,
+          createdAt: new Date().toISOString(),
+          rsvps: []
+        });
+      });
+      composerOpen = false;
+      render();
+    } else if (form.classList.contains("rsvp-form")) {
+      e.preventDefault();
+      var meetupId = form.dataset.meetup;
+      var name = form.elements["name"].value.trim();
+      if (!name) return;
+      mutate(function (state) {
+        var mm = state.meetups.find(function (x) { return x.id === meetupId; });
+        if (!mm) return;
+        mm.rsvps.push({ id: genId("r"), name: name, createdAt: new Date().toISOString() });
+      });
+    }
+  });
+
+  render();
+
+  if (window.claude && typeof window.claude.use === "function") {
+    window.claude.use("artifact").then(function (api) {
+      artifactApi = api;
+      if (!api) {
+        readOnly = true;
+        render();
+      }
+    }).catch(function () {
+      readOnly = true;
+      render();
+    });
+  } else {
+    readOnly = true;
+    render();
+  }
+})();
+</script>
