@@ -8,7 +8,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700&family=Sora:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 
-<style>
+<style id="app-style">
   :root {
     --bg: #f2f0f7;
     --surface: #ffffff;
@@ -47,8 +47,9 @@
 
   * { box-sizing: border-box; }
 
+  html, body { margin: 0; padding: 0; }
+
   body {
-    margin: 0;
     min-height: 100vh;
     background: var(--bg);
     color: var(--text);
@@ -79,7 +80,7 @@
   }
 
   .count {
-    font-family: "Bricolage Grotesque", "Sora", sans-serif;
+    font-family: "Bricolage Grotesque", "Sora", ui-sans-serif, sans-serif;
     font-weight: 700;
     font-size: clamp(5rem, 22vw, 7.5rem);
     line-height: 1;
@@ -103,7 +104,7 @@
     border-radius: 999px;
     background: var(--accent);
     color: var(--accent-contrast);
-    font-family: "Sora", sans-serif;
+    font-family: "Sora", ui-sans-serif, system-ui, sans-serif;
     font-size: 1.1rem;
     font-weight: 600;
     letter-spacing: 0.01em;
@@ -114,14 +115,18 @@
   .add-btn:hover { background: var(--accent-strong); }
   .add-btn:active { transform: scale(0.97); }
 
+  .add-btn:disabled {
+    opacity: 0.5;
+    cursor: default;
+    transform: none;
+  }
+
   .add-btn:focus-visible {
     outline: 3px solid var(--accent-strong);
     outline-offset: 3px;
   }
 
-  .reset-row {
-    margin-top: 1.5rem;
-  }
+  .reset-row { margin-top: 1.5rem; }
 
   .reset-btn {
     appearance: none;
@@ -142,10 +147,26 @@
     background: var(--bg);
   }
 
+  .reset-btn:disabled {
+    opacity: 0.5;
+    cursor: default;
+  }
+
   .reset-btn:focus-visible {
     outline: 2px solid var(--accent-strong);
     outline-offset: 2px;
   }
+
+  .status {
+    margin: 1.25rem 0 0;
+    min-height: 1.1rem;
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0.02em;
+    color: var(--text-muted);
+  }
+
+  .status[data-tone="warn"] { color: var(--accent-strong); }
 
   @media (prefers-reduced-motion: reduce) {
     .add-btn, .reset-btn { transition: none; }
@@ -154,65 +175,222 @@
 </head>
 <body>
 <main>
-  <p class="eyebrow">Extra Pill</p>
-
-  <div class="count" id="count" aria-live="polite">0</div>
-  <p class="count-label" id="countLabel">presses</p>
-
-  <button class="add-btn" id="addBtn" type="button">+1</button>
-
-  <div class="reset-row">
-    <button class="reset-btn" id="resetBtn" type="button">Reset to 0</button>
-  </div>
+<p class="eyebrow">Extra Pill</p>
+<div class="count" id="count" aria-live="polite">0</div>
+<p class="count-label" id="countLabel">presses</p>
+<button class="add-btn" id="addBtn" type="button">+1</button>
+<div class="reset-row"><button class="reset-btn" id="resetBtn" type="button">Reset to 0</button></div>
+<p class="status" id="status">&nbsp;</p>
 </main>
 
-<script>
-  (function () {
-    var STORAGE_KEY = "extraPillCount";
-    var countEl = document.getElementById("count");
-    var labelEl = document.getElementById("countLabel");
-    var addBtn = document.getElementById("addBtn");
-    var resetBtn = document.getElementById("resetBtn");
+<script type="application/json" id="seed">{"rev":0,"count":0}</script>
 
-    function readCount() {
-      try {
-        var raw = localStorage.getItem(STORAGE_KEY);
-        var n = parseInt(raw, 10);
-        return Number.isFinite(n) && n >= 0 ? n : 0;
-      } catch (e) {
-        return 0;
+<script id="app-script">
+(function () {
+  var PENDING_KEY = "extraPill.pending";
+  var LOCAL_KEY = "extraPill.local";
+  var DEBOUNCE_MS = 1200;
+  var FONT_URL = "https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700&family=Sora:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap";
+
+  var BODY_MARKUP =
+    '<main>\n' +
+    '<p class="eyebrow">Extra Pill</p>\n' +
+    '<div class="count" id="count" aria-live="polite">0</div>\n' +
+    '<p class="count-label" id="countLabel">presses</p>\n' +
+    '<button class="add-btn" id="addBtn" type="button">+1</button>\n' +
+    '<div class="reset-row"><button class="reset-btn" id="resetBtn" type="button">Reset to 0</button></div>\n' +
+    '<p class="status" id="status">&nbsp;</p>\n' +
+    '</main>';
+
+  var countEl = document.getElementById("count");
+  var labelEl = document.getElementById("countLabel");
+  var addBtn = document.getElementById("addBtn");
+  var resetBtn = document.getElementById("resetBtn");
+  var statusEl = document.getElementById("status");
+
+  var api = null;
+  var mode = "loading";
+  var dirty = false;
+  var retried = false;
+  var timer = null;
+
+  function normalize(raw) {
+    var s = raw && typeof raw === "object" ? raw : {};
+    var rev = typeof s.rev === "number" && s.rev >= 0 ? s.rev : 0;
+    var count = typeof s.count === "number" && s.count >= 0 ? Math.floor(s.count) : 0;
+    return { rev: rev, count: count };
+  }
+
+  function readSeed() {
+    try { return normalize(JSON.parse(document.getElementById("seed").textContent)); }
+    catch (e) { return { rev: 0, count: 0 }; }
+  }
+
+  function readPending() {
+    try {
+      var raw = sessionStorage.getItem(PENDING_KEY);
+      return raw ? normalize(JSON.parse(raw)) : null;
+    } catch (e) { return null; }
+  }
+
+  function writePending(s) {
+    try { sessionStorage.setItem(PENDING_KEY, JSON.stringify(s)); } catch (e) {}
+  }
+
+  function clearPending() {
+    try { sessionStorage.removeItem(PENDING_KEY); } catch (e) {}
+  }
+
+  // Fallback used ONLY where this page cannot save server-side (e.g. the
+  // static copy hosted on GitHub Pages, which has no Claude runtime).
+  function readLocal() {
+    try {
+      var raw = localStorage.getItem(LOCAL_KEY);
+      return raw ? normalize(JSON.parse(raw)) : null;
+    } catch (e) { return null; }
+  }
+
+  function writeLocal(s) {
+    try { localStorage.setItem(LOCAL_KEY, JSON.stringify(s)); } catch (e) {}
+  }
+
+  function adoptLocal() {
+    var local = readLocal();
+    if (local && local.rev > state.rev) { state = local; dirty = false; }
+  }
+
+  var state = readSeed();
+  var pending = readPending();
+  if (pending && pending.rev > state.rev) {
+    state = pending;
+    dirty = true;
+  } else {
+    clearPending();
+  }
+
+  function escapeHtml(str) {
+    return String(str).replace(/[&<>"']/g, function (c) {
+      return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c];
+    });
+  }
+
+  function buildDocument(s) {
+    var style = document.getElementById("app-style").textContent;
+    var code = document.getElementById("app-script").textContent;
+    return '<!doctype html>\n<html lang="en">\n<head>\n' +
+      '<meta charset="utf-8">\n' +
+      '<meta name="viewport" content="width=device-width, initial-scale=1">\n' +
+      '<title>Extra Pill</title>\n' +
+      '<link rel="preconnect" href="https://fonts.googleapis.com">\n' +
+      '<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>\n' +
+      '<link href="' + escapeHtml(FONT_URL) + '" rel="stylesheet">\n' +
+      '<style id="app-style">' + style + '</style>\n' +
+      '</head>\n<body>\n' +
+      BODY_MARKUP + '\n' +
+      '<script type="application/json" id="seed">' + JSON.stringify(s) + '<\/script>\n' +
+      '<script id="app-script">' + code + '<\/script>\n' +
+      '</body>\n</html>\n';
+  }
+
+  function setStatus(text, tone) {
+    statusEl.textContent = text;
+    if (tone) statusEl.setAttribute("data-tone", tone);
+    else statusEl.removeAttribute("data-tone");
+  }
+
+  function refreshStatus() {
+    if (mode === "saving") return setStatus("Saving…");
+    if (mode === "server") return setStatus(dirty ? "Unsaved" : "Saved to your Claude account");
+    if (mode === "readonly") return setStatus("Read-only view — changes won't save", "warn");
+    if (mode === "error") return setStatus("Couldn't save — press again to retry", "warn");
+    if (mode === "local") return setStatus("Saved in this browser only", "warn");
+    return setStatus(" ");
+  }
+
+  function render() {
+    countEl.textContent = String(state.count);
+    labelEl.textContent = state.count === 1 ? "press" : "presses";
+    var locked = (mode === "readonly");
+    addBtn.disabled = locked;
+    resetBtn.disabled = locked;
+    refreshStatus();
+  }
+
+  function schedule(delay) {
+    clearTimeout(timer);
+    timer = setTimeout(commit, mode === "local" ? 0 : delay);
+  }
+
+  function commit() {
+    if (mode === "readonly") return;
+    if (mode === "local") { writeLocal(state); dirty = false; refreshStatus(); return; }
+    publishNow();
+  }
+
+  function publishNow() {
+    if (!api || !dirty || mode === "readonly") return;
+    mode = "saving";
+    refreshStatus();
+    writePending(state);
+
+    api.publish(buildDocument(state)).then(function () {
+      // The shell reloads this view to the new version.
+    }, function (err) {
+      var code = err && err.code;
+      if (code === "conflict") return;              // shell reloads to the winner
+      if (code === "rate_limited") { mode = "server"; schedule(5000); refreshStatus(); return; }
+      if (code === "upstream_error" && !retried) {
+        retried = true;
+        mode = "server";
+        schedule(1500 + Math.random() * 1500);
+        refreshStatus();
+        return;
       }
-    }
-
-    function writeCount(n) {
-      try {
-        localStorage.setItem(STORAGE_KEY, String(n));
-      } catch (e) {
-        /* private mode / storage blocked: state just won't survive reload */
+      if (code === "not_writer" || code === "not_granted" || code === "not_declared" ||
+          code === "capability_disabled" || code === "capability_removed" || code === "consent_required") {
+        mode = "readonly";
+      } else {
+        mode = "error";
       }
-    }
-
-    var count = readCount();
-
-    function render() {
-      countEl.textContent = String(count);
-      labelEl.textContent = count === 1 ? "press" : "presses";
-    }
-
-    addBtn.addEventListener("click", function () {
-      count += 1;
-      writeCount(count);
+      clearPending();
       render();
     });
+  }
 
-    resetBtn.addEventListener("click", function () {
-      count = 0;
-      writeCount(count);
-      render();
-    });
-
+  function change(nextCount, delay) {
+    state = { rev: state.rev + 1, count: nextCount };
+    dirty = true;
+    retried = false;
+    if (mode === "error") mode = "server";
     render();
-  })();
+    schedule(delay);
+  }
+
+  addBtn.addEventListener("click", function () { change(state.count + 1, DEBOUNCE_MS); });
+  resetBtn.addEventListener("click", function () { change(0, 0); });
+
+  render();
+
+  if (window.claude && typeof window.claude.use === "function") {
+    window.claude.use("artifact").then(function (ns) {
+      api = ns;
+      mode = ns ? "server" : "local";
+      if (!ns) adoptLocal();
+      render();
+      if (dirty) schedule(0);
+    }, function () {
+      mode = "local";
+      adoptLocal();
+      render();
+      if (dirty) schedule(0);
+    });
+  } else {
+    mode = "local";
+    adoptLocal();
+    render();
+    if (dirty) schedule(0);
+  }
+})();
 </script>
 
 </body>
