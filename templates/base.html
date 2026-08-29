@@ -3,12 +3,12 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Meetups</title>
+    <title>Mood Tracker</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
     <header>
-        <h1><a href="{{ url_for('index') }}">Meetups</a></h1>
+        <h1><a href="{{ url_for('index') }}">Mood Tracker</a></h1>
     </header>
     <main>
         {% block content %}{% endblock %}

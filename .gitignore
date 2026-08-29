@@ -2,7 +2,7 @@ __pycache__/
 *.pyc
 .venv/
 venv/
-meetups.db
+moods.db
 .DS_Store
 .claude/settings.local.json
 .claude/scheduled_tasks.lock

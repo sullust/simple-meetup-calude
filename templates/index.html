@@ -1,26 +1,61 @@
 {% extends "base.html" %}
 {% block content %}
-    <a class="button" href="{{ url_for('new_meetup') }}">+ New meetup</a>
 
-    {% if meetups %}
-        <ul class="meetup-list">
-            {% for m in meetups %}
-                <li class="meetup-card">
-                    <div class="meetup-date">{{ m.event_date }}</div>
-                    <div class="meetup-body">
-                        <h2><a href="{{ url_for('meetup_detail', meetup_id=m.id) }}">{{ m.title }}</a></h2>
-                        {% if m.details %}
-                            <p>{{ m.details }}</p>
-                        {% endif %}
-                        <p class="rsvp-count">{{ m.rsvp_count }} going</p>
-                    </div>
-                    <form method="post" action="{{ url_for('delete_meetup', meetup_id=m.id) }}">
-                        <button type="submit" class="delete">Delete</button>
-                    </form>
-                </li>
-            {% endfor %}
-        </ul>
+<form id="mood-form" class="mood-form" method="post" action="{{ url_for('log_entry') }}">
+    <label for="activity">What did you do?</label>
+    <textarea id="activity" name="activity" rows="3" placeholder="Went for a walk, finished a project, had lunch with a friend..."></textarea>
+
+    <div class="mood-buttons">
+        {% for mood in moods %}
+        <button type="submit" name="mood" value="{{ mood.key }}" class="mood-button" title="{{ mood.label }}" aria-label="{{ mood.label }}">
+            <span class="mood-emoji">{{ mood.emoji }}</span>
+            <span class="mood-label">{{ mood.label }}</span>
+        </button>
+        {% endfor %}
+    </div>
+</form>
+
+{% if saved %}
+<p class="saved-banner" id="saved-banner">✓ Saved!</p>
+{% endif %}
+
+<section class="history">
+    <h2>History</h2>
+    {% if entries %}
+    <ul class="entry-list">
+        {% for entry in entries %}
+        {% set mood = entry.mood | mood_info %}
+        <li class="entry-card">
+            <span class="entry-emoji" title="{{ mood.label }}" aria-label="{{ mood.label }}">{{ mood.emoji }}</span>
+            <div class="entry-body">
+                <p class="entry-date">{{ entry.created_at | format_dt }}</p>
+                {% if entry.activity %}
+                <p class="entry-activity">{{ entry.activity }}</p>
+                {% else %}
+                <p class="entry-activity empty">(no details)</p>
+                {% endif %}
+            </div>
+            <form method="post" action="{{ url_for('delete_entry', entry_id=entry.id) }}">
+                <button type="submit" class="delete">Delete</button>
+            </form>
+        </li>
+        {% endfor %}
+    </ul>
     {% else %}
-        <p class="empty">No upcoming meetups. Create one!</p>
+    <p class="empty">No entries yet. Log your first mood above.</p>
     {% endif %}
+</section>
+
+{% if saved %}
+<script>
+    // Drop the ?saved=1 query param and auto-hide the banner without a reload.
+    if (window.history.replaceState) {
+        window.history.replaceState({}, document.title, window.location.pathname);
+    }
+    setTimeout(function () {
+        var banner = document.getElementById("saved-banner");
+        if (banner) banner.classList.add("fade-out");
+    }, 2000);
+</script>
+{% endif %}
 {% endblock %}
