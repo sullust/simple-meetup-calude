@@ -1,0 +1,92 @@
+[
+  {
+    "id": "xv7e4zuc58s7wzm5hvt8",
+    "level": 2,
+    "label": "Sleepy",
+    "emoji": "😪",
+    "ts": "2026-09-03T22:21:43.908Z",
+    "dayOfWeek": "Thursday",
+    "dateStr": "Sep 3, 2026",
+    "timeStr": "6:21 PM"
+  },
+  {
+    "id": "vimz4kbb9yud9mkczqiv",
+    "level": 2,
+    "label": "Sleepy",
+    "emoji": "😪",
+    "ts": "2026-09-03T21:16:40.233Z",
+    "dayOfWeek": "Thursday",
+    "dateStr": "Sep 3, 2026",
+    "timeStr": "5:16 PM"
+  },
+  {
+    "id": "djt63l5p7swy5cio7u2l",
+    "level": 3,
+    "label": "Neutral",
+    "emoji": "😐",
+    "ts": "2026-09-04T11:21:42.622Z",
+    "dayOfWeek": "Friday",
+    "dateStr": "Sep 4, 2026",
+    "timeStr": "7:21 AM"
+  },
+  {
+    "id": "8rbbrk21fa8dr29wgy7j",
+    "level": 2,
+    "label": "Sleepy",
+    "emoji": "😪",
+    "ts": "2026-09-04T12:22:18.860Z",
+    "dayOfWeek": "Friday",
+    "dateStr": "Sep 4, 2026",
+    "timeStr": "8:22 AM"
+  },
+  {
+    "id": "5pmg0l8kjh0mzmexuhuw",
+    "level": 4,
+    "label": "Awake",
+    "emoji": "🙂",
+    "ts": "2026-09-04T15:47:18.810Z",
+    "dayOfWeek": "Friday",
+    "dateStr": "Sep 4, 2026",
+    "timeStr": "11:47 AM"
+  },
+  {
+    "id": "4o5wdzbb445v33r1ns22",
+    "level": 3,
+    "label": "Neutral",
+    "emoji": "😐",
+    "ts": "2026-09-04T16:00:13.977Z",
+    "dayOfWeek": "Friday",
+    "dateStr": "Sep 4, 2026",
+    "timeStr": "12:00 PM"
+  },
+  {
+    "id": "5jjn8y4e9pa88ukagcmj",
+    "level": 3,
+    "label": "Neutral",
+    "emoji": "😐",
+    "ts": "2026-09-04T17:27:12.771Z",
+    "dayOfWeek": "Friday",
+    "dateStr": "Sep 4, 2026",
+    "timeStr": "1:27 PM"
+  },
+  {
+    "id": "2yot7prht513q30z2k25",
+    "level": 4,
+    "label": "Awake",
+    "emoji": "🙂",
+    "ts": "2026-09-04T19:58:23.131Z",
+    "dayOfWeek": "Friday",
+    "dateStr": "Sep 4, 2026",
+    "timeStr": "3:58 PM"
+  },
+  {
+    "id": "19o9ir7jeo6wy3kqzltk",
+    "level": 4,
+    "label": "Awake",
+    "emoji": "🙂",
+    "ts": "2026-09-04T22:06:30.962Z",
+    "dayOfWeek": "Friday",
+    "dateStr": "Sep 4, 2026",
+    "timeStr": "6:06 PM"
+  }
+]
