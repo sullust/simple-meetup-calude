@@ -1,15 +1,5 @@
 [
   {
-    "id": "xv7e4zuc58s7wzm5hvt8",
-    "level": 2,
-    "label": "Sleepy",
-    "emoji": "😪",
-    "ts": "2026-09-03T22:21:43.908Z",
-    "dayOfWeek": "Thursday",
-    "dateStr": "Sep 3, 2026",
-    "timeStr": "6:21 PM"
-  },
-  {
     "id": "vimz4kbb9yud9mkczqiv",
     "level": 2,
     "label": "Sleepy",
@@ -18,6 +8,16 @@
     "dayOfWeek": "Thursday",
     "dateStr": "Sep 3, 2026",
     "timeStr": "5:16 PM"
+  },
+  {
+    "id": "xv7e4zuc58s7wzm5hvt8",
+    "level": 2,
+    "label": "Sleepy",
+    "emoji": "😪",
+    "ts": "2026-09-03T22:21:43.908Z",
+    "dayOfWeek": "Thursday",
+    "dateStr": "Sep 3, 2026",
+    "timeStr": "6:21 PM"
   },
   {
     "id": "djt63l5p7swy5cio7u2l",
@@ -88,5 +88,15 @@
     "dayOfWeek": "Friday",
     "dateStr": "Sep 4, 2026",
     "timeStr": "6:06 PM"
+  },
+  {
+    "id": "r7r0fak7pzvh8fq1ya2z",
+    "level": 4,
+    "label": "Awake",
+    "emoji": "🙂",
+    "ts": "2026-09-06T15:44:53.162Z",
+    "dayOfWeek": "Sunday",
+    "dateStr": "Sep 6, 2026",
+    "timeStr": "11:44 AM"
   }
 ]
