@@ -2,7 +2,7 @@
      Storage works by the page republishing its own full HTML (the `artifact` capability)
      with the updated entry list embedded — this only works inside the Claude.ai Artifact runtime -->
 <title>Wanted a Pill</title>
-<style>
+<style id="app-style">
 @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400..600&family=Work+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap');
 
 :root {
@@ -166,7 +166,13 @@ h1 {
 
 .skip-btn:hover:not(:disabled) { color: var(--accent-strong); }
 .skip-btn:focus-visible { outline: 2px solid var(--accent-strong); outline-offset: 2px; }
-.skip-btn:disabled { color: var(--border); text-decoration: none; cursor: not-allowed; }
+.skip-btn:disabled { opacity: 0.5; text-decoration: none; cursor: not-allowed; }
+
+#app {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
 
 .stats {
   display: grid;
@@ -194,7 +200,8 @@ h1 {
 .stat-value {
   font-family: "Fraunces", Georgia, serif;
   font-weight: 560;
-  font-size: 1.5rem;
+  font-size: clamp(1.1rem, 5vw, 1.5rem);
+  white-space: nowrap;
   font-variant-numeric: tabular-nums;
   margin: 0;
 }
@@ -363,7 +370,7 @@ h1 {
 }
 </style>
 <div class="wrap">
-  <header>
+  <header id="app-header">
     <p class="eyebrow">Craving log</p>
     <h1>Wanted a Pill</h1>
     <p class="subhead">Tap the moment it happens. The log and the hourly pattern below are stored on the server, so they hold up across devices and visits.</p>
@@ -375,7 +382,6 @@ h1 {
 
   <script id="app-script">
 (function () {
-  var SELF_SCRIPT_EL = document.currentScript;
   var STORAGE_KEY = 'wanted-a-pill-entries-v1';
   var MAX_ENTRIES = 5000;
 
@@ -604,29 +610,27 @@ h1 {
     toastTimer = setTimeout(function () { toastEl.classList.remove('show'); }, 2400);
   }
 
-  function styleHTML() {
-    var styleEl = document.querySelector('style');
-    return styleEl ? styleEl.outerHTML : '';
-  }
-
+  // Returns null if any piece of the page template is missing, so a broken copy is never published.
   function buildFullDocument(entries) {
-    var scriptSrc = SELF_SCRIPT_EL ? SELF_SCRIPT_EL.textContent : '';
-    var headerHTML = document.querySelector('header') ? document.querySelector('header').outerHTML : '';
+    var styleEl = document.getElementById('app-style');
+    var headerEl = document.getElementById('app-header');
+    var scriptEl = document.getElementById('app-script');
+    if (!styleEl || !headerEl || !scriptEl || !scriptEl.textContent) return null;
     return '<!doctype html>\n' +
       '<html lang="en">\n' +
       '<head>\n' +
       '<meta charset="utf-8">\n' +
       '<meta name="viewport" content="width=device-width, initial-scale=1">\n' +
       '<title>Wanted a Pill</title>\n' +
-      styleHTML() + '\n' +
+      styleEl.outerHTML + '\n' +
       '</head>\n' +
       '<body>\n' +
       '<div class="wrap">\n' +
-      headerHTML + '\n' +
+      headerEl.outerHTML + '\n' +
       '<script id="entries-data" type="application/json">' + JSON.stringify(entries) + '<\/script>\n' +
       '<div id="app"></div>\n' +
       '<div id="toast" class="toast" role="status" aria-live="polite"></div>\n' +
-      '<script id="app-script">' + scriptSrc + '<\/script>\n' +
+      '<script id="app-script">' + scriptEl.textContent + '<\/script>\n' +
       '</div>\n' +
       '</body>\n' +
       '</html>';
@@ -635,7 +639,14 @@ h1 {
   function save(successMessage, prevEntries) {
     return artifactPromise.then(function (api) {
       if (api) {
-        return api.publish(buildFullDocument(state.entries)).then(function () {
+        var doc = buildFullDocument(state.entries);
+        if (!doc) {
+          state.entries = prevEntries;
+          render();
+          showToast("Couldn't save — reload the page and try again.");
+          return;
+        }
+        return api.publish(doc).then(function () {
           // success: this view reloads to the new version
         }, function (err) {
           var code = err && err.code;
