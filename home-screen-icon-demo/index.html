@@ -100,7 +100,8 @@
   var hrefs = ours.map(function (el) { return el.href || ''; });
 
   // Drop any pre-existing apple-touch-icon the host injected, so there is exactly one candidate.
-  Array.prototype.slice.call(document.head.querySelectorAll('link[rel~="apple-touch-icon"],link[rel~="apple-touch-icon-precomposed"]'))
+  // (Only when our own links were found in <body>; on a standalone host they are already in <head>.)
+  if (ours.length) Array.prototype.slice.call(document.head.querySelectorAll('link[rel~="apple-touch-icon"],link[rel~="apple-touch-icon-precomposed"]'))
     .forEach(function (el) { if (hrefs.indexOf(el.href) === -1) el.parentNode.removeChild(el); });
 
   var first = document.head.firstChild;
