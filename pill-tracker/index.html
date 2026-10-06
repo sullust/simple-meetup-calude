@@ -1,0 +1,727 @@
+<!-- Published as a Claude.ai Artifact: https://claude.ai/artifact/Dqva53kPru2xVQ13TwNnTG
+     Storage works by the page republishing its own full HTML (the `artifact` capability)
+     with the updated entry list embedded — this only works inside the Claude.ai Artifact runtime -->
+<title>Wanted a Pill</title>
+<style id="app-style">
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400..600&family=Work+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap');
+
+:root {
+  --bg: #F6F3EC;
+  --surface: #FFFFFF;
+  --surface-alt: #EFEAE0;
+  --border: #E1DACB;
+  --text: #292520;
+  --text-muted: #79715F;
+  --accent: #3E6259;
+  --accent-strong: #2B4941;
+  --accent-soft: #DEE9E2;
+  --accent-contrast: #FBFAF6;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #181A16;
+    --surface: #202219;
+    --surface-alt: #262920;
+    --border: #34372B;
+    --text: #EDE9DD;
+    --text-muted: #9B9686;
+    --accent: #8FC3AE;
+    --accent-strong: #A9D6C2;
+    --accent-soft: #263129;
+    --accent-contrast: #12201A;
+  }
+}
+
+:root[data-theme="dark"] {
+  --bg: #181A16;
+  --surface: #202219;
+  --surface-alt: #262920;
+  --border: #34372B;
+  --text: #EDE9DD;
+  --text-muted: #9B9686;
+  --accent: #8FC3AE;
+  --accent-strong: #A9D6C2;
+  --accent-soft: #263129;
+  --accent-contrast: #12201A;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: "Work Sans", ui-sans-serif, system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+.wrap {
+  max-width: 640px;
+  margin: 0 auto;
+  padding: 40px 24px 80px;
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+
+.eyebrow {
+  font-family: "IBM Plex Mono", ui-monospace, monospace;
+  font-size: 0.7rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin: 0 0 6px;
+}
+
+h1 {
+  font-family: "Fraunces", Georgia, serif;
+  font-optical-sizing: auto;
+  font-weight: 560;
+  font-size: clamp(2rem, 5vw, 2.6rem);
+  line-height: 1.05;
+  margin: 0 0 8px;
+  text-wrap: balance;
+}
+
+.subhead {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 0.98rem;
+  max-width: 46ch;
+}
+
+.banner {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  background: var(--surface-alt);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 12px 14px;
+  font-size: 0.88rem;
+  color: var(--text-muted);
+}
+
+.banner strong { color: var(--text); }
+
+.button-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+}
+
+.log-button {
+  width: 100%;
+  max-width: 380px;
+  height: 92px;
+  border-radius: 999px;
+  border: none;
+  background: var(--accent);
+  color: var(--accent-contrast);
+  font-family: "Work Sans", sans-serif;
+  font-size: 1.15rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  cursor: pointer;
+  box-shadow: 0 1px 0 rgba(0,0,0,0.06), 0 10px 24px -12px var(--accent-strong);
+  transition: transform 120ms ease, box-shadow 120ms ease, opacity 120ms ease;
+}
+
+.log-button:hover:not(:disabled) { box-shadow: 0 1px 0 rgba(0,0,0,0.06), 0 14px 28px -12px var(--accent-strong); }
+.log-button:active:not(:disabled) { transform: scale(0.97); }
+.log-button:focus-visible { outline: 2px solid var(--accent-strong); outline-offset: 3px; }
+.log-button:disabled { opacity: 0.55; cursor: not-allowed; }
+
+@media (prefers-reduced-motion: reduce) {
+  .log-button { transition: none; }
+  .log-button:active:not(:disabled) { transform: none; }
+}
+
+.log-button .icon { flex: none; }
+
+.hint {
+  margin: 0;
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  text-align: center;
+}
+
+.skip-btn {
+  background: none;
+  border: none;
+  padding: 4px 2px;
+  margin: 0;
+  font-family: "Work Sans", sans-serif;
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+}
+
+.skip-btn:hover:not(:disabled) { color: var(--accent-strong); }
+.skip-btn:focus-visible { outline: 2px solid var(--accent-strong); outline-offset: 2px; }
+.skip-btn:disabled { opacity: 0.5; text-decoration: none; cursor: not-allowed; }
+
+#app {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+
+.stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+
+.stat {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 14px 12px;
+  text-align: center;
+}
+
+.stat-label {
+  font-family: "IBM Plex Mono", ui-monospace, monospace;
+  font-size: 0.66rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin: 0 0 6px;
+}
+
+.stat-value {
+  font-family: "Fraunces", Georgia, serif;
+  font-weight: 560;
+  font-size: clamp(1.1rem, 5vw, 1.5rem);
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+  margin: 0;
+}
+
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 18px 18px 16px;
+}
+
+.card h2 {
+  font-family: "Fraunces", Georgia, serif;
+  font-weight: 560;
+  font-size: 1.05rem;
+  margin: 0 0 2px;
+}
+
+.card .caption {
+  margin: 0 0 16px;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+.bars {
+  display: flex;
+  align-items: flex-end;
+  gap: 2px;
+  height: 84px;
+}
+
+.bar-wrap {
+  position: relative;
+  flex: 1 1 0;
+  display: flex;
+  align-items: flex-end;
+  height: 100%;
+}
+
+.bar {
+  width: 100%;
+  background: var(--accent);
+  border-radius: 3px 3px 1px 1px;
+  min-height: 3px;
+}
+
+.bar-tip {
+  position: absolute;
+  bottom: calc(100% + 6px);
+  left: 50%;
+  transform: translate(-50%, 2px);
+  background: var(--text);
+  color: var(--bg);
+  font-family: "IBM Plex Mono", ui-monospace, monospace;
+  font-size: 0.68rem;
+  white-space: nowrap;
+  padding: 4px 7px;
+  border-radius: 6px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 120ms ease, transform 120ms ease;
+  z-index: 2;
+}
+
+.bar-wrap:hover .bar-tip,
+.bar-wrap:focus-visible .bar-tip {
+  opacity: 1;
+  transform: translate(-50%, 0);
+}
+
+.bar-wrap:focus-visible { outline: none; }
+.bar-wrap:focus-visible .bar { outline: 2px solid var(--accent-strong); outline-offset: 1px; }
+
+.axis {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 8px;
+  font-family: "IBM Plex Mono", ui-monospace, monospace;
+  font-size: 0.66rem;
+  color: var(--text-muted);
+}
+
+.day-group + .day-group { margin-top: 18px; }
+
+.day-label {
+  font-family: "IBM Plex Mono", ui-monospace, monospace;
+  font-size: 0.7rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin: 0 0 6px;
+}
+
+.entry-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 9px 2px;
+  border-bottom: 1px solid var(--border);
+}
+
+.day-group:last-child .entry-row:last-child { border-bottom: none; }
+
+.entry-time {
+  font-family: "IBM Plex Mono", ui-monospace, monospace;
+  font-variant-numeric: tabular-nums;
+  font-size: 0.92rem;
+}
+
+.entry-rel {
+  color: var(--text-muted);
+  font-size: 0.82rem;
+  margin-left: 8px;
+}
+
+.delete-btn {
+  flex: none;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  border: none;
+  background: transparent;
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  line-height: 1;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.delete-btn:hover { background: var(--surface-alt); color: var(--text); }
+.delete-btn:focus-visible { outline: 2px solid var(--accent-strong); outline-offset: 1px; }
+
+.empty {
+  color: var(--text-muted);
+  font-size: 0.92rem;
+  text-align: center;
+  padding: 12px 0 4px;
+}
+
+.toast {
+  position: fixed;
+  left: 50%;
+  bottom: 24px;
+  transform: translate(-50%, 12px);
+  background: var(--text);
+  color: var(--bg);
+  font-size: 0.86rem;
+  padding: 10px 16px;
+  border-radius: 999px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 160ms ease, transform 160ms ease;
+  z-index: 10;
+}
+
+.toast.show {
+  opacity: 1;
+  transform: translate(-50%, 0);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .toast, .bar-tip { transition: none; }
+}
+</style>
+<div class="wrap">
+  <header id="app-header">
+    <p class="eyebrow">Craving log</p>
+    <h1>Wanted a Pill</h1>
+    <p class="subhead">Tap the moment it happens. The log and the hourly pattern below are stored on the server, so they hold up across devices and visits.</p>
+  </header>
+
+  <script id="entries-data" type="application/json">[]</script>
+  <div id="app"></div>
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+  <script id="app-script">
+(function () {
+  var STORAGE_KEY = 'wanted-a-pill-entries-v1';
+  var MAX_ENTRIES = 5000;
+
+  var appEl = document.getElementById('app');
+  var toastEl = document.getElementById('toast');
+  var toastTimer = null;
+
+  var dataEl = document.getElementById('entries-data');
+  var initialEntries = [];
+  try {
+    var parsed = JSON.parse(dataEl.textContent || '[]');
+    if (Array.isArray(parsed)) initialEntries = parsed;
+  } catch (e) {}
+
+  var state = { entries: initialEntries };
+  var readOnly = false;
+  var busy = false;
+  var localNoted = false;
+
+  var artifactPromise = (window.claude && typeof window.claude.use === 'function')
+    ? window.claude.use('artifact')
+    : Promise.resolve(null);
+
+  artifactPromise.then(function (api) {
+    if (!api) {
+      try {
+        var raw = localStorage.getItem(STORAGE_KEY);
+        var local = raw ? JSON.parse(raw) : null;
+        if (Array.isArray(local)) {
+          state.entries = local;
+          render();
+        }
+      } catch (e) {}
+    }
+  }, function () {});
+
+  function trim(entries) {
+    if (entries.length > MAX_ENTRIES) return entries.slice(entries.length - MAX_ENTRIES);
+    return entries;
+  }
+
+  function fmtTime(iso) {
+    return new Date(iso).toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit' });
+  }
+
+  function fmtRelative(iso) {
+    var diffMs = Date.now() - new Date(iso).getTime();
+    var min = Math.round(diffMs / 60000);
+    if (min < 1) return 'just now';
+    if (min < 60) return min + 'm ago';
+    var hr = Math.round(min / 60);
+    if (hr < 24) return hr + 'h ago';
+    var day = Math.round(hr / 24);
+    return day + 'd ago';
+  }
+
+  function startOfDay(d) {
+    return new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime();
+  }
+
+  function dayLabel(iso) {
+    var d = new Date(iso);
+    var now = new Date();
+    var diffDays = Math.round((startOfDay(now) - startOfDay(d)) / 86400000);
+    if (diffDays === 0) return 'Today';
+    if (diffDays === 1) return 'Yesterday';
+    return d.toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric' });
+  }
+
+  function dayKey(iso) {
+    var d = new Date(iso);
+    return d.getFullYear() + '-' + d.getMonth() + '-' + d.getDate();
+  }
+
+  function hourLabel(h) {
+    var period = h < 12 ? 'AM' : 'PM';
+    var hr = h % 12;
+    if (hr === 0) hr = 12;
+    return hr + ' ' + period;
+  }
+
+  function escapeHtml(s) {
+    return String(s).replace(/[&<>"']/g, function (c) {
+      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+    });
+  }
+
+  function computeStats(entries) {
+    var startToday = startOfDay(new Date());
+    var now = Date.now();
+    var todayCount = 0, weekCount = 0, lastTs = null;
+    for (var i = 0; i < entries.length; i++) {
+      var t = new Date(entries[i]).getTime();
+      if (t >= startToday) todayCount++;
+      if (now - t <= 7 * 86400000) weekCount++;
+      if (lastTs === null || t > lastTs) lastTs = t;
+    }
+    return {
+      today: todayCount,
+      week: weekCount,
+      last: lastTs === null ? '—' : fmtRelative(new Date(lastTs).toISOString())
+    };
+  }
+
+  function computeHourly(entries) {
+    var counts = new Array(24).fill(0);
+    for (var i = 0; i < entries.length; i++) {
+      counts[new Date(entries[i]).getHours()]++;
+    }
+    return counts;
+  }
+
+  function groupByDay(entries) {
+    var sorted = entries.slice().sort(function (a, b) { return new Date(b) - new Date(a); });
+    var groups = [];
+    var byKey = {};
+    for (var i = 0; i < sorted.length; i++) {
+      var iso = sorted[i];
+      var key = dayKey(iso);
+      if (!byKey[key]) {
+        byKey[key] = { key: key, label: dayLabel(iso), items: [] };
+        groups.push(byKey[key]);
+      }
+      byKey[key].items.push(iso);
+    }
+    return groups;
+  }
+
+  function mostRecentToday(entries) {
+    var startToday = startOfDay(new Date());
+    var best = null;
+    for (var i = 0; i < entries.length; i++) {
+      var t = new Date(entries[i]).getTime();
+      if (t >= startToday && (best === null || t > new Date(best).getTime())) best = entries[i];
+    }
+    return best;
+  }
+
+  function renderBanner() {
+    if (!readOnly) return '';
+    return '<div class="banner"><span>🔒</span><span><strong>Read-only here.</strong> You can see this log, but only its owner can add or remove entries.</span></div>';
+  }
+
+  function renderStats(entries) {
+    var s = computeStats(entries);
+    return '' +
+      '<div class="stats">' +
+        '<div class="stat"><p class="stat-label">Today</p><p class="stat-value">' + s.today + '</p></div>' +
+        '<div class="stat"><p class="stat-label">This week</p><p class="stat-value">' + s.week + '</p></div>' +
+        '<div class="stat"><p class="stat-label">Last</p><p class="stat-value">' + escapeHtml(s.last) + '</p></div>' +
+      '</div>';
+  }
+
+  function renderChart(entries) {
+    var counts = computeHourly(entries);
+    var max = Math.max.apply(null, counts.concat([1]));
+    var bars = '';
+    for (var h = 0; h < 24; h++) {
+      var c = counts[h];
+      var px = c === 0 ? 3 : Math.max(6, Math.round((c / max) * 84));
+      var next = (h + 1) % 24;
+      var label = hourLabel(h) + '–' + hourLabel(next) + ' · ' + c + (c === 1 ? ' time' : ' times');
+      bars += '<div class="bar-wrap" tabindex="0" role="img" aria-label="' + escapeHtml(label) + '">' +
+                '<div class="bar" style="height:' + px + 'px"></div>' +
+                '<div class="bar-tip">' + escapeHtml(label) + '</div>' +
+              '</div>';
+    }
+    return '' +
+      '<div class="card">' +
+        '<h2>By hour of day</h2>' +
+        '<p class="caption">Local time, across every entry — look for where it clusters.</p>' +
+        '<div class="bars">' + bars + '</div>' +
+        '<div class="axis"><span>12 AM</span><span>6 AM</span><span>12 PM</span><span>6 PM</span><span>12 AM</span></div>' +
+      '</div>';
+  }
+
+  function renderLog(entries) {
+    if (entries.length === 0) {
+      return '<div class="card"><h2>Log</h2><p class="empty">No entries yet — tap the button above when it happens.</p></div>';
+    }
+    var groups = groupByDay(entries);
+    var html = '<div class="card"><h2>Log</h2>';
+    for (var i = 0; i < groups.length; i++) {
+      var g = groups[i];
+      html += '<div class="day-group"><p class="day-label">' + escapeHtml(g.label) + '</p>';
+      for (var j = 0; j < g.items.length; j++) {
+        var iso = g.items[j];
+        var delBtn = readOnly ? '' : '<button class="delete-btn" type="button" data-action="delete" data-ts="' + escapeHtml(iso) + '" aria-label="Remove this entry">×</button>';
+        html += '<div class="entry-row">' +
+                  '<span><span class="entry-time">' + escapeHtml(fmtTime(iso)) + '</span><span class="entry-rel">' + escapeHtml(fmtRelative(iso)) + '</span></span>' +
+                  delBtn +
+                '</div>';
+      }
+      html += '</div>';
+    }
+    html += '</div>';
+    return html;
+  }
+
+  function render() {
+    var entries = state.entries;
+    var disabled = busy || readOnly;
+    var skippable = !readOnly && !busy && !!mostRecentToday(entries);
+    appEl.innerHTML = '' +
+      renderBanner() +
+      '<div class="button-card">' +
+        '<button class="log-button" type="button" data-action="log" ' + (disabled ? 'disabled' : '') + '>' +
+          '<svg class="icon" width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">' +
+            '<rect x="3" y="10.5" width="18" height="7" rx="3.5" transform="rotate(-45 12 12)" stroke="currentColor" stroke-width="2"/>' +
+            '<line x1="9.5" y1="14.5" x2="14.5" y2="9.5" stroke="currentColor" stroke-width="2"/>' +
+          '</svg>' +
+          '<span data-role="button-label">' + (readOnly ? 'Read-only' : 'I wanted a pill') + '</span>' +
+        '</button>' +
+        '<p class="hint">' + (readOnly ? 'Logging is off in this view.' : 'Logs the current time. Nothing else to fill in.') + '</p>' +
+        (readOnly ? '' : '<button class="skip-btn" type="button" data-action="skip" ' + (skippable ? '' : 'disabled') + '>I skipped it — undo the last tap</button>') +
+      '</div>' +
+      renderStats(entries) +
+      renderChart(entries) +
+      renderLog(entries);
+  }
+
+  function showToast(msg) {
+    toastEl.textContent = msg;
+    toastEl.classList.add('show');
+    if (toastTimer) clearTimeout(toastTimer);
+    toastTimer = setTimeout(function () { toastEl.classList.remove('show'); }, 2400);
+  }
+
+  // Returns null if any piece of the page template is missing, so a broken copy is never published.
+  function buildFullDocument(entries) {
+    var styleEl = document.getElementById('app-style');
+    var headerEl = document.getElementById('app-header');
+    var scriptEl = document.getElementById('app-script');
+    if (!styleEl || !headerEl || !scriptEl || !scriptEl.textContent) return null;
+    return '<!doctype html>\n' +
+      '<html lang="en">\n' +
+      '<head>\n' +
+      '<meta charset="utf-8">\n' +
+      '<meta name="viewport" content="width=device-width, initial-scale=1">\n' +
+      '<title>Wanted a Pill</title>\n' +
+      styleEl.outerHTML + '\n' +
+      '</head>\n' +
+      '<body>\n' +
+      '<div class="wrap">\n' +
+      headerEl.outerHTML + '\n' +
+      '<script id="entries-data" type="application/json">' + JSON.stringify(entries) + '<\/script>\n' +
+      '<div id="app"></div>\n' +
+      '<div id="toast" class="toast" role="status" aria-live="polite"></div>\n' +
+      '<script id="app-script">' + scriptEl.textContent + '<\/script>\n' +
+      '</div>\n' +
+      '</body>\n' +
+      '</html>';
+  }
+
+  function save(successMessage, prevEntries) {
+    return artifactPromise.then(function (api) {
+      if (api) {
+        var doc = buildFullDocument(state.entries);
+        if (!doc) {
+          state.entries = prevEntries;
+          render();
+          showToast("Couldn't save — reload the page and try again.");
+          return;
+        }
+        return api.publish(doc).then(function () {
+          // success: this view reloads to the new version
+        }, function (err) {
+          var code = err && err.code;
+          if (code === 'conflict') return; // view is reloading to the winner
+          if (code === 'not_writer' || code === 'not_granted' || code === 'consent_required' || code === 'not_declared') {
+            readOnly = true;
+            state.entries = prevEntries;
+            render();
+            showToast('This log is read-only in your view.');
+            return;
+          }
+          state.entries = prevEntries;
+          render();
+          showToast("Couldn't save — try again.");
+        });
+      }
+      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state.entries)); } catch (e) {}
+      if (!localNoted) {
+        localNoted = true;
+        showToast('Saved on this device only — server sync is unavailable in this view.');
+      } else if (successMessage) {
+        showToast(successMessage);
+      }
+    });
+  }
+
+  function logNow() {
+    if (busy || readOnly) return;
+    busy = true;
+    var iso = new Date().toISOString();
+    var prev = state.entries;
+    state.entries = trim(prev.concat([iso]));
+    render();
+    var labelEl = appEl.querySelector('[data-role="button-label"]');
+    if (labelEl) labelEl.textContent = 'Logged ' + fmtTime(iso);
+    save('Logged ' + fmtTime(iso), prev).then(function () {
+      busy = false;
+      if (!readOnly) render();
+    });
+  }
+
+  function deleteEntry(ts) {
+    if (readOnly) return;
+    var prev = state.entries;
+    state.entries = prev.filter(function (e) { return e !== ts; });
+    render();
+    save('Removed', prev);
+  }
+
+  function skipLast() {
+    if (busy || readOnly) return;
+    var target = mostRecentToday(state.entries);
+    if (!target) {
+      showToast('Nothing logged yet today.');
+      return;
+    }
+    busy = true;
+    var prev = state.entries;
+    state.entries = prev.filter(function (e) { return e !== target; });
+    render();
+    save('Skipped — removed ' + fmtTime(target), prev).then(function () {
+      busy = false;
+      if (!readOnly) render();
+    });
+  }
+
+  appEl.addEventListener('click', function (e) {
+    var target = e.target.closest('[data-action]');
+    if (!target) return;
+    if (target.dataset.action === 'log') logNow();
+    if (target.dataset.action === 'delete') deleteEntry(target.dataset.ts);
+    if (target.dataset.action === 'skip') skipLast();
+  });
+
+  render();
+})();
+  </script>
+</div>
