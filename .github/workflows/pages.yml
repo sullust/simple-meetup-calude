@@ -5,6 +5,7 @@ on:
     branches: [main]
     paths:
       - "home-screen-icon-demo/**"
+      - "drink-log/**"
       - ".github/workflows/pages.yml"
   workflow_dispatch:
 
@@ -38,6 +39,10 @@ jobs:
             cat home-screen-icon-demo/index.html
             printf '\n</html>\n'
           } > _site/index.html
+          # Drink Log Home Screen launcher at /drink-log/
+          mkdir -p _site/drink-log
+          cp -r drink-log/icons drink-log/manifest.webmanifest _site/drink-log/
+          cp drink-log/launcher.html _site/drink-log/index.html
           ls -R _site
 
       - uses: actions/configure-pages@v5

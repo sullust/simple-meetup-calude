@@ -37,3 +37,13 @@
   actually changed — no commit per button tap, just a daily check-in so the
   logged data has a durable git history and isn't only stored in the
   artifact.
+
+## Drink log
+
+- Live entries are logged into the Claude.ai Artifact itself
+  (https://claude.ai/artifact/53oDJzYMn6i1K5jqJxiiyu) using the `artifact`
+  capability, same as the pill tracker. Source: drink-log/index.html.
+- Home Screen icon: drink-log/launcher.html + manifest + icons/ are deployed by
+  the GitHub Pages workflow to /drink-log/ (after merge to main). To use a
+  custom icon, replace drink-log/icons/*.png (180, 192, 512 px, opaque).
+  No daily sync routine is set up yet; drink-log/data/entries.json is a placeholder.
