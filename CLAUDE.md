@@ -46,4 +46,7 @@
 - Home Screen icon: drink-log/launcher.html + manifest + icons/ are deployed by
   the GitHub Pages workflow to /drink-log/ (after merge to main). To use a
   custom icon, replace drink-log/icons/*.png (180, 192, 512 px, opaque).
-  No daily sync routine is set up yet; drink-log/data/entries.json is a placeholder.
+- A daily Routine ("Drink Log daily GitHub sync", trig_01PxrQHdaJYPQZonDaujtm7C)
+  fires once every 24 hours into this session (session_015TxFtoeTbvUGnAhqGBwvEB).
+  It reads the artifact's live HTML, extracts the entries-data JSON, writes it to
+  drink-log/data/entries.json, and commits + pushes only if the file changed.
