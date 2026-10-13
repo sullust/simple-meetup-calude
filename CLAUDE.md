@@ -43,11 +43,13 @@
 - Live entries are logged into the Claude.ai Artifact itself
   (https://claude.ai/artifact/53oDJzYMn6i1K5jqJxiiyu) using the `artifact`
   capability, same as the pill tracker. Source: drink-log/index.html.
-- Home Screen icon: the Pages workflow serves drink-log/index.html itself at
-  /drink-log/ wrapped with apple-touch-icon/manifest tags in <head>, plus
-  icons/ and the manifest. Outside Claude.ai that copy stores entries in
-  localStorage on the device only (the artifact is the synced source of truth). To use a
-  custom icon, replace drink-log/icons/*.png (180, 192, 512 px, opaque).
+- Home Screen icon: the Pages workflow serves drink-log/launcher.html at
+  /drink-log/ with the apple-touch-icon. It is only a shortcut: opening it with
+  ?go (the address Safari saves when adding to Home Screen) redirects to the
+  artifact, so all data stays in the artifact. Not a standalone web app, so it
+  opens in Safari where the user is signed in to claude.ai. A Pages copy of the
+  app itself is NOT acceptable (it would store entries only on the device).
+  To use a custom icon, replace drink-log/icons/*.png (180, 192, 512 px, opaque).
 - A daily Routine ("Drink Log daily GitHub sync", trig_01PxrQHdaJYPQZonDaujtm7C)
   fires once every 24 hours into this session (session_015TxFtoeTbvUGnAhqGBwvEB).
   It reads the artifact's live HTML, extracts the entries-data JSON, writes it to
