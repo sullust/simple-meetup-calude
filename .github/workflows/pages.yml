@@ -39,10 +39,23 @@ jobs:
             cat home-screen-icon-demo/index.html
             printf '\n</html>\n'
           } > _site/index.html
-          # Drink Log Home Screen launcher at /drink-log/
+          # Drink Log: the real app served at /drink-log/ with Home Screen icon tags in <head>.
+          # (Outside the Claude.ai runtime it stores entries in localStorage on that device.)
           mkdir -p _site/drink-log
           cp -r drink-log/icons drink-log/manifest.webmanifest _site/drink-log/
-          cp drink-log/launcher.html _site/drink-log/index.html
+          {
+            printf '<!doctype html>\n<html lang="en">\n<head>\n<meta charset="utf-8">\n'
+            printf '<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">\n'
+            printf '<link rel="apple-touch-icon" sizes="180x180" href="icons/apple-touch-icon.png">\n'
+            printf '<link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">\n'
+            printf '<link rel="manifest" href="manifest.webmanifest">\n'
+            printf '<meta name="apple-mobile-web-app-capable" content="yes">\n<meta name="mobile-web-app-capable" content="yes">\n'
+            printf '<meta name="apple-mobile-web-app-title" content="Drink Log">\n'
+            printf '<meta name="apple-mobile-web-app-status-bar-style" content="default">\n'
+            printf '<meta name="theme-color" content="#2F6F8F">\n'
+            cat drink-log/index.html
+            printf '\n</html>\n'
+          } > _site/drink-log/index.html
           ls -R _site
 
       - uses: actions/configure-pages@v5

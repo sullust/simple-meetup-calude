@@ -43,8 +43,10 @@
 - Live entries are logged into the Claude.ai Artifact itself
   (https://claude.ai/artifact/53oDJzYMn6i1K5jqJxiiyu) using the `artifact`
   capability, same as the pill tracker. Source: drink-log/index.html.
-- Home Screen icon: drink-log/launcher.html + manifest + icons/ are deployed by
-  the GitHub Pages workflow to /drink-log/ (after merge to main). To use a
+- Home Screen icon: the Pages workflow serves drink-log/index.html itself at
+  /drink-log/ wrapped with apple-touch-icon/manifest tags in <head>, plus
+  icons/ and the manifest. Outside Claude.ai that copy stores entries in
+  localStorage on the device only (the artifact is the synced source of truth). To use a
   custom icon, replace drink-log/icons/*.png (180, 192, 512 px, opaque).
 - A daily Routine ("Drink Log daily GitHub sync", trig_01PxrQHdaJYPQZonDaujtm7C)
   fires once every 24 hours into this session (session_015TxFtoeTbvUGnAhqGBwvEB).
