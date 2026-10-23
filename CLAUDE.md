@@ -54,3 +54,17 @@
   fires once every 24 hours into this session (session_015TxFtoeTbvUGnAhqGBwvEB).
   It reads the artifact's live HTML, extracts the entries-data JSON, writes it to
   drink-log/data/entries.json, and commits + pushes only if the file changed.
+
+## Sleep log
+
+- Live entries are logged into the Claude.ai Artifact itself
+  (https://claude.ai/artifact/6hVpuahWndWrFQLTyMXvjq) using the `artifact`
+  capability, same as the drink log. Source: sleep-log/index.html. Two buttons
+  ("went to bed" 🛏️ / "got out of bed" ☕); a repeat of the last button is not
+  logged (toast instead); each bed→up pair shows its duration in the history.
+  Entries are `{t: ISO, k: 'bed'|'up'}`.
+- Home Screen icon (bed emoji): same shortcut approach as the drink log — the
+  Pages workflow serves sleep-log/launcher.html at /sleep-log/ with the
+  apple-touch-icon; opening with ?go redirects to the artifact. Icons are drawn
+  by sleep-log/make_icons.py (replace sleep-log/icons/*.png to customise).
+- Daily sync Routine to sleep-log/data/entries.json: not set up yet.

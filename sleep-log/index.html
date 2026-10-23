@@ -1,0 +1,458 @@
+<!-- Published as a Claude.ai Artifact (URL in CLAUDE.md). Storage works by the page republishing its own full HTML
+     (the `artifact` capability) with the updated entry list embedded — only works inside the Claude.ai Artifact runtime -->
+<title>Sleep Log</title>
+<style id="app-style">
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400..600&family=Work+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap');
+
+:root {
+  --bg: #F4F4FA;
+  --surface: #FFFFFF;
+  --surface-alt: #E9E9F3;
+  --border: #D8D8E8;
+  --text: #1E2030;
+  --text-muted: #666A85;
+  --accent: #3B4A9E;
+  --accent-strong: #2B3880;
+  --accent-soft: #E1E4F5;
+  --accent-contrast: #F8F9FF;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #12141F;
+    --surface: #1A1D2C;
+    --surface-alt: #222638;
+    --border: #32374F;
+    --text: #E8EAF6;
+    --text-muted: #9498B5;
+    --accent: #8E9CF0;
+    --accent-strong: #B3BDFF;
+    --accent-soft: #252A47;
+    --accent-contrast: #10122A;
+  }
+}
+
+:root[data-theme="dark"] {
+  --bg: #12141F;
+  --surface: #1A1D2C;
+  --surface-alt: #222638;
+  --border: #32374F;
+  --text: #E8EAF6;
+  --text-muted: #9498B5;
+  --accent: #8E9CF0;
+  --accent-strong: #B3BDFF;
+  --accent-soft: #252A47;
+  --accent-contrast: #10122A;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: "Work Sans", ui-sans-serif, system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+.wrap {
+  max-width: 640px;
+  margin: 0 auto;
+  padding: 40px 24px 80px;
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+
+.eyebrow {
+  font-family: "IBM Plex Mono", ui-monospace, monospace;
+  font-size: 0.7rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin: 0 0 6px;
+}
+
+h1 {
+  font-family: "Fraunces", Georgia, serif;
+  font-optical-sizing: auto;
+  font-weight: 560;
+  font-size: clamp(2rem, 5vw, 2.6rem);
+  line-height: 1.05;
+  margin: 0 0 8px;
+  text-wrap: balance;
+}
+
+.subhead {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 0.98rem;
+  max-width: 46ch;
+}
+
+.banner {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  background: var(--surface-alt);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 12px 14px;
+  font-size: 0.88rem;
+  color: var(--text-muted);
+}
+
+.banner strong { color: var(--text); }
+
+.button-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+}
+
+.log-button {
+  width: 100%;
+  max-width: 380px;
+  height: 120px;
+  border-radius: 999px;
+  border: none;
+  background: var(--accent);
+  color: var(--accent-contrast);
+  font-family: "Work Sans", sans-serif;
+  font-size: 1.4rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  cursor: pointer;
+  box-shadow: 0 1px 0 rgba(0,0,0,0.06), 0 10px 24px -12px var(--accent-strong);
+  transition: transform 120ms ease, box-shadow 120ms ease, opacity 120ms ease;
+}
+
+.log-button:hover:not(:disabled) { box-shadow: 0 1px 0 rgba(0,0,0,0.06), 0 14px 28px -12px var(--accent-strong); }
+.log-button:active:not(:disabled) { transform: scale(0.97); }
+.log-button:focus-visible { outline: 2px solid var(--accent-strong); outline-offset: 3px; }
+.log-button:disabled { opacity: 0.55; cursor: not-allowed; }
+
+@media (prefers-reduced-motion: reduce) {
+  .log-button { transition: none; }
+  .log-button:active:not(:disabled) { transform: none; }
+}
+
+.log-button .icon { flex: none; }
+
+.hint {
+  margin: 0;
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  text-align: center;
+}
+
+.skip-btn {
+  background: none;
+  border: none;
+  padding: 4px 2px;
+  margin: 0;
+  font-family: "Work Sans", sans-serif;
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+}
+
+.skip-btn:hover:not(:disabled) { color: var(--accent-strong); }
+.skip-btn:focus-visible { outline: 2px solid var(--accent-strong); outline-offset: 2px; }
+.skip-btn:disabled { opacity: 0.5; text-decoration: none; cursor: not-allowed; }
+
+#app {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+
+
+.btn-row { display: flex; flex-direction: column; gap: 14px; width: 100%; align-items: center; }
+.log-button.alt { background: #B5651D; color: #FFF8EE; box-shadow: 0 1px 0 rgba(0,0,0,0.06), 0 10px 24px -12px #7A3F0E; }
+.log-button .emoji { font-size: 2rem; line-height: 1; }
+.log-button.current { outline: 3px solid var(--accent-strong); outline-offset: 3px; }
+#app { display: flex; flex-direction: column; gap: 28px; }
+.status { text-align: center; color: var(--text-muted); font-size: 0.9rem; margin: 0; }
+.stats { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+.stat { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 14px 12px; text-align: center; }
+.stat-label { font-family: "IBM Plex Mono", ui-monospace, monospace; font-size: 0.66rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-muted); margin: 0 0 6px; }
+.stat-value { font-family: "Fraunces", Georgia, serif; font-weight: 560; font-size: clamp(1.1rem, 5vw, 1.5rem); white-space: nowrap; font-variant-numeric: tabular-nums; margin: 0; }
+.card { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 18px 18px 16px; }
+.card h2 { font-family: "Fraunces", Georgia, serif; font-weight: 560; font-size: 1.05rem; margin: 0 0 12px; }
+.day-group + .day-group { margin-top: 18px; }
+.day-label { font-family: "IBM Plex Mono", ui-monospace, monospace; font-size: 0.7rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--text-muted); margin: 0 0 6px; }
+.entry-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 9px 2px; border-bottom: 1px solid var(--border); }
+.day-group:last-child .entry-row:last-child { border-bottom: none; }
+.entry-main { display: flex; align-items: center; gap: 10px; min-width: 0; flex-wrap: wrap; }
+.entry-emoji { font-size: 1.2rem; }
+.entry-time { font-family: "IBM Plex Mono", ui-monospace, monospace; font-variant-numeric: tabular-nums; font-size: 0.92rem; }
+.entry-kind { color: var(--text-muted); font-size: 0.82rem; }
+.delta { font-family: "IBM Plex Mono", ui-monospace, monospace; font-size: 0.8rem; background: var(--accent-soft); color: var(--accent-strong); padding: 3px 9px; border-radius: 999px; white-space: nowrap; }
+.delete-btn { flex: none; width: 26px; height: 26px; border-radius: 50%; border: none; background: transparent; color: var(--text-muted); font-size: 0.9rem; line-height: 1; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+.delete-btn:hover { background: var(--surface-alt); color: var(--text); }
+.delete-btn:focus-visible { outline: 2px solid var(--accent-strong); outline-offset: 1px; }
+.empty { color: var(--text-muted); font-size: 0.92rem; text-align: center; padding: 12px 0 4px; }
+.toast { position: fixed; left: 50%; bottom: 24px; transform: translate(-50%, 12px); background: var(--text); color: var(--bg); font-size: 0.86rem; padding: 10px 16px; border-radius: 999px; opacity: 0; pointer-events: none; transition: opacity 160ms ease, transform 160ms ease; z-index: 10; max-width: calc(100vw - 32px); text-align: center; }
+.toast.show { opacity: 1; transform: translate(-50%, 0); }
+@media (prefers-reduced-motion: reduce) { .toast { transition: none; } }
+</style>
+<div class="wrap">
+  <header id="app-header">
+    <p class="eyebrow">Sleep log</p>
+    <h1>Sleep Log</h1>
+    <p class="subhead">Tap when you go to bed and when you get up. Each pair shows how long you were in bed.</p>
+  </header>
+
+  <script id="entries-data" type="application/json">[]</script>
+  <div id="app"></div>
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+  <script id="app-script">
+(function () {
+  // entries: [{ t: ISO timestamp, k: 'bed' | 'up' }], oldest first
+  var STORAGE_KEY = 'sleep-log-entries-v1';
+  var MAX_ENTRIES = 5000;
+  var LABEL = { bed: 'Went to bed', up: 'Got out of bed' };
+  var EMOJI = { bed: '🛏️', up: '☕' };
+
+  var appEl = document.getElementById('app');
+  var toastEl = document.getElementById('toast');
+  var toastTimer = null;
+
+  var initialEntries = [];
+  try {
+    var parsed = JSON.parse(document.getElementById('entries-data').textContent || '[]');
+    if (Array.isArray(parsed)) initialEntries = parsed;
+  } catch (e) {}
+
+  var state = { entries: initialEntries };
+  var readOnly = false;
+  var busy = false;
+  var localNoted = false;
+
+  var artifactPromise = (window.claude && typeof window.claude.use === 'function')
+    ? window.claude.use('artifact')
+    : Promise.resolve(null);
+
+  artifactPromise.then(function (api) {
+    if (!api) {
+      try {
+        var raw = localStorage.getItem(STORAGE_KEY);
+        var local = raw ? JSON.parse(raw) : null;
+        if (Array.isArray(local)) { state.entries = local; render(); }
+      } catch (e) {}
+    }
+  }, function () {});
+
+  function fmtTime(iso) {
+    return new Date(iso).toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit' });
+  }
+
+  function fmtDuration(ms) {
+    var min = Math.max(0, Math.round(ms / 60000));
+    var h = Math.floor(min / 60), m = min % 60;
+    if (h === 0) return m + 'm';
+    return h + 'h ' + (m < 10 ? '0' : '') + m + 'm';
+  }
+
+  function startOfDay(d) { return new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime(); }
+
+  function dayLabel(iso) {
+    var d = new Date(iso);
+    var diff = Math.round((startOfDay(new Date()) - startOfDay(d)) / 86400000);
+    if (diff === 0) return 'Today';
+    if (diff === 1) return 'Yesterday';
+    return d.toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric' });
+  }
+
+  function dayKey(iso) {
+    var d = new Date(iso);
+    return d.getFullYear() + '-' + d.getMonth() + '-' + d.getDate();
+  }
+
+  function escapeHtml(s) {
+    return String(s).replace(/[&<>"']/g, function (c) {
+      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+    });
+  }
+
+  function sorted(entries) {
+    return entries.slice().sort(function (a, b) { return new Date(a.t) - new Date(b.t); });
+  }
+
+  // Attach a duration to every "up" that directly follows a "bed".
+  function withDeltas(entries) {
+    var asc = sorted(entries);
+    return asc.map(function (e, i) {
+      var prev = asc[i - 1];
+      var ms = (e.k === 'up' && prev && prev.k === 'bed') ? new Date(e.t) - new Date(prev.t) : null;
+      return { t: e.t, k: e.k, ms: ms };
+    });
+  }
+
+  function lastEntry(entries) {
+    var asc = sorted(entries);
+    return asc.length ? asc[asc.length - 1] : null;
+  }
+
+  function computeStats(items) {
+    var durs = items.filter(function (x) { return x.ms !== null; });
+    var last = durs.length ? durs[durs.length - 1].ms : null;
+    var recent = durs.slice(-7);
+    var avg = recent.length ? recent.reduce(function (s, x) { return s + x.ms; }, 0) / recent.length : null;
+    return { last: last === null ? '—' : fmtDuration(last), avg: avg === null ? '—' : fmtDuration(avg) };
+  }
+
+  function renderStats(items) {
+    var s = computeStats(items);
+    return '<div class="stats">' +
+      '<div class="stat"><p class="stat-label">Last night</p><p class="stat-value">' + escapeHtml(s.last) + '</p></div>' +
+      '<div class="stat"><p class="stat-label">Avg (last 7)</p><p class="stat-value">' + escapeHtml(s.avg) + '</p></div>' +
+      '</div>';
+  }
+
+  function renderLog(items) {
+    if (items.length === 0) {
+      return '<div class="card"><h2>History</h2><p class="empty">Nothing logged yet — tap a button above.</p></div>';
+    }
+    var desc = items.slice().reverse();
+    var groups = [], byKey = {};
+    desc.forEach(function (e) {
+      var key = dayKey(e.t);
+      if (!byKey[key]) { byKey[key] = { label: dayLabel(e.t), items: [] }; groups.push(byKey[key]); }
+      byKey[key].items.push(e);
+    });
+    var html = '<div class="card"><h2>History</h2>';
+    groups.forEach(function (g) {
+      html += '<div class="day-group"><p class="day-label">' + escapeHtml(g.label) + '</p>';
+      g.items.forEach(function (e) {
+        var del = readOnly ? '' : '<button class="delete-btn" type="button" data-action="delete" data-ts="' + escapeHtml(e.t) + '" aria-label="Remove this entry">×</button>';
+        html += '<div class="entry-row"><span class="entry-main">' +
+          '<span class="entry-emoji">' + EMOJI[e.k] + '</span>' +
+          '<span class="entry-time">' + escapeHtml(fmtTime(e.t)) + '</span>' +
+          '<span class="entry-kind">' + LABEL[e.k] + '</span>' +
+          (e.ms !== null ? '<span class="delta">' + escapeHtml(fmtDuration(e.ms)) + ' in bed</span>' : '') +
+          '</span>' + del + '</div>';
+      });
+      html += '</div>';
+    });
+    return html + '</div>';
+  }
+
+  function render() {
+    var items = withDeltas(state.entries);
+    var last = lastEntry(state.entries);
+    var dis = (busy || readOnly) ? 'disabled' : '';
+    var banner = readOnly
+      ? '<div class="banner"><span>🔒</span><span><strong>Read-only here.</strong> You can see this log, but only its owner can add or remove entries.</span></div>'
+      : '';
+    var status = last
+      ? 'Last: ' + LABEL[last.k].toLowerCase() + ' at ' + fmtTime(last.t) + ' (' + dayLabel(last.t).toLowerCase() + ')'
+      : 'Nothing logged yet.';
+    appEl.innerHTML = banner +
+      '<div class="button-card"><div class="btn-row">' +
+        '<button class="log-button" type="button" data-action="log" data-kind="bed" ' + dis + '><span class="emoji">' + EMOJI.bed + '</span><span>Went to bed</span></button>' +
+        '<button class="log-button alt" type="button" data-action="log" data-kind="up" ' + dis + '><span class="emoji">' + EMOJI.up + '</span><span>Got out of bed</span></button>' +
+      '</div><p class="status">' + escapeHtml(status) + '</p></div>' +
+      renderStats(items) + renderLog(items);
+  }
+
+  function showToast(msg) {
+    toastEl.textContent = msg;
+    toastEl.classList.add('show');
+    if (toastTimer) clearTimeout(toastTimer);
+    toastTimer = setTimeout(function () { toastEl.classList.remove('show'); }, 2800);
+  }
+
+  // Returns null if any piece of the page template is missing, so a broken copy is never published.
+  function buildFullDocument(entries) {
+    var styleEl = document.getElementById('app-style');
+    var headerEl = document.getElementById('app-header');
+    var scriptEl = document.getElementById('app-script');
+    if (!styleEl || !headerEl || !scriptEl || !scriptEl.textContent) return null;
+    return '<!doctype html>\n<html lang="en">\n<head>\n<meta charset="utf-8">\n' +
+      '<meta name="viewport" content="width=device-width, initial-scale=1">\n' +
+      '<title>Sleep Log</title>\n' + styleEl.outerHTML + '\n</head>\n<body>\n<div class="wrap">\n' +
+      headerEl.outerHTML + '\n' +
+      '<script id="entries-data" type="application/json">' + JSON.stringify(entries) + '<\/script>\n' +
+      '<div id="app"></div>\n' +
+      '<div id="toast" class="toast" role="status" aria-live="polite"></div>\n' +
+      '<script id="app-script">' + scriptEl.textContent + '<\/script>\n</div>\n</body>\n</html>';
+  }
+
+  function save(successMessage, prevEntries) {
+    return artifactPromise.then(function (api) {
+      if (api) {
+        var doc = buildFullDocument(state.entries);
+        if (!doc) {
+          state.entries = prevEntries; render();
+          showToast("Couldn't save — reload the page and try again.");
+          return;
+        }
+        return api.publish(doc).then(function () {}, function (err) {
+          var code = err && err.code;
+          if (code === 'conflict') return; // view is reloading to the winner
+          state.entries = prevEntries;
+          if (code === 'not_writer' || code === 'not_granted' || code === 'consent_required' || code === 'not_declared') {
+            readOnly = true; render();
+            showToast('This log is read-only in your view.');
+            return;
+          }
+          render();
+          showToast("Couldn't save — try again.");
+        });
+      }
+      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state.entries)); } catch (e) {}
+      if (!localNoted) {
+        localNoted = true;
+        showToast('Saved on this device only — server sync is unavailable in this view.');
+      } else if (successMessage) {
+        showToast(successMessage);
+      }
+    });
+  }
+
+  function logNow(kind) {
+    if (busy || readOnly) return;
+    var last = lastEntry(state.entries);
+    if (last && last.k === kind) {
+      showToast('Already logged "' + LABEL[kind].toLowerCase() + '" at ' + fmtTime(last.t) + ' — not logged again.');
+      return;
+    }
+    busy = true;
+    var iso = new Date().toISOString();
+    var prev = state.entries;
+    state.entries = prev.concat([{ t: iso, k: kind }]).slice(-MAX_ENTRIES);
+    render();
+    save(LABEL[kind] + ' ' + fmtTime(iso), prev).then(function () {
+      busy = false;
+      if (!readOnly) render();
+    });
+  }
+
+  function deleteEntry(ts) {
+    if (readOnly) return;
+    var prev = state.entries;
+    state.entries = prev.filter(function (e) { return e.t !== ts; });
+    render();
+    save('Removed', prev);
+  }
+
+  appEl.addEventListener('click', function (e) {
+    var target = e.target.closest('[data-action]');
+    if (!target) return;
+    if (target.dataset.action === 'log') logNow(target.dataset.kind);
+    if (target.dataset.action === 'delete') deleteEntry(target.dataset.ts);
+  });
+
+  render();
+})();
+  </script>
+</div>

@@ -6,6 +6,7 @@ on:
     paths:
       - "home-screen-icon-demo/**"
       - "drink-log/**"
+      - "sleep-log/**"
       - ".github/workflows/pages.yml"
   workflow_dispatch:
 
@@ -43,6 +44,10 @@ jobs:
           mkdir -p _site/drink-log
           cp -r drink-log/icons _site/drink-log/
           cp drink-log/launcher.html _site/drink-log/index.html
+          # Sleep Log Home Screen shortcut at /sleep-log/ (same approach).
+          mkdir -p _site/sleep-log
+          cp -r sleep-log/icons _site/sleep-log/
+          cp sleep-log/launcher.html _site/sleep-log/index.html
           ls -R _site
 
       - uses: actions/configure-pages@v5
