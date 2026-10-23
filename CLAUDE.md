@@ -67,4 +67,7 @@
   Pages workflow serves sleep-log/launcher.html at /sleep-log/ with the
   apple-touch-icon; opening with ?go redirects to the artifact. Icons are drawn
   by sleep-log/make_icons.py (replace sleep-log/icons/*.png to customise).
-- Daily sync Routine to sleep-log/data/entries.json: not set up yet.
+- A daily Routine ("Sleep Log daily GitHub sync", trig_01UembyX6wWCpBtyqzQXb9rh)
+  fires once every 24 hours into this session (session_01PZQLEJBHHD3zXxUK6EqLcs).
+  It reads the artifact's live HTML, extracts the entries-data JSON, writes it to
+  sleep-log/data/entries.json, and commits + pushes only if the file changed.
