@@ -20,7 +20,7 @@
   --due: #B23A2E;
   --due-soft: #F8E5E2;
   --on-pill: #FFFFFF;
-  --pill-aspirin: #B9412F;
+  --pill-tylenol: #B9412F;
   --pill-cephalexin: #1F6F8B;
   --pill-gabapentin: #8A6414;
   --font-body: "Atkinson Hyperlegible", "Helvetica Neue", Arial, sans-serif;
@@ -42,7 +42,7 @@
     --due: #F08A7E;
     --due-soft: #3A1F1C;
     --on-pill: #FFFFFF;
-    --pill-aspirin: #C9503D;
+    --pill-tylenol: #C9503D;
     --pill-cephalexin: #2A7F9C;
     --pill-gabapentin: #9A7320;
     color-scheme: dark;
@@ -63,7 +63,7 @@
   --due: #F08A7E;
   --due-soft: #3A1F1C;
   --on-pill: #FFFFFF;
-  --pill-aspirin: #C9503D;
+  --pill-tylenol: #C9503D;
   --pill-cephalexin: #2A7F9C;
   --pill-gabapentin: #9A7320;
   color-scheme: dark;
@@ -299,12 +299,18 @@ h1 {
   var REPEAT_GUARD_MIN = 20;      // same pill within this many minutes asks for a second tap
   var CONFIRM_WINDOW_MS = 6000;
   var PILLS = [
-    { id: 'aspirin',     name: 'Aspirin',     doses: 4 },
+    { id: 'tylenol',     name: 'Tylenol',     doses: 4 },
     { id: 'cephalexin',  name: 'Cephalexin',  doses: 4 },
     { id: 'gabapentin',  name: 'Gabapentin',  doses: 3 }
   ];
   var BY_ID = {};
   PILLS.forEach(function (p) { BY_ID[p.id] = p; });
+  var RENAMED = { aspirin: 'tylenol' }; // entries logged before the Tylenol correction
+  function migrate(list) {
+    return list.filter(function (e) { return e && e.t && e.p; })
+      .map(function (e) { return RENAMED[e.p] ? { t: e.t, p: RENAMED[e.p] } : e; })
+      .filter(function (e) { return BY_ID[e.p]; });
+  }
 
   var appEl = document.getElementById('app');
   var toastEl = document.getElementById('toast');
@@ -313,7 +319,7 @@ h1 {
   var initialEntries = [];
   try {
     var parsed = JSON.parse(document.getElementById('entries-data').textContent || '[]');
-    if (Array.isArray(parsed)) initialEntries = parsed.filter(function (e) { return e && e.t && BY_ID[e.p]; });
+    if (Array.isArray(parsed)) initialEntries = migrate(parsed);
   } catch (e) {}
 
   var state = { entries: initialEntries };
@@ -331,7 +337,7 @@ h1 {
       try {
         var raw = localStorage.getItem(STORAGE_KEY);
         var local = raw ? JSON.parse(raw) : null;
-        if (Array.isArray(local)) { state.entries = local; render(); }
+        if (Array.isArray(local)) { state.entries = migrate(local); render(); }
       } catch (e) {}
     }
   }, function () {});

@@ -75,11 +75,12 @@
   (https://claude.ai/artifact/TsgidugrJpXbdkAGZeXHgb) using the `artifact`
   capability, same as the drink log. Source: pill-schedule/index.html.
   Distinct from the pill tracker (which is a craving log). One button per
-  medication: Aspirin 4x/day, Cephalexin 4x/day, Gabapentin 3x/day. After
+  medication: Tylenol 4x/day, Cephalexin 4x/day, Gabapentin 3x/day. After
   each tap the doses still owed that day are spaced evenly from the tap to
   9:00 pm bedtime (last dose lands at 9 pm); the count resets at local
-  midnight with no carry-over. Entries are `{t: ISO, p: 'aspirin'|'cephalexin'|'gabapentin'}`.
+  midnight with no carry-over. Entries are `{t: ISO, p: 'tylenol'|'cephalexin'|'gabapentin'}`.
   A repeat tap of the same pill within 20 minutes asks for a second tap.
+  Entries saved under the old id `aspirin` are read as `tylenol`.
 - Home Screen icon (pill emoji on pharmacy green): same shortcut approach as
   the drink log — the Pages workflow serves pill-schedule/launcher.html at
   /pill-schedule/ with the apple-touch-icon; opening with ?go redirects to
