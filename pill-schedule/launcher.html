@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Pill Schedule</title>
+<!-- Home Screen shortcut for the Pill Schedule artifact. The icon comes from this page; the schedule itself
+     (and all its data) lives in the Claude.ai artifact. Deliberately NOT a standalone web app:
+     the shortcut opens in regular Safari, where you're already signed in to claude.ai. -->
+<link rel="apple-touch-icon" sizes="180x180" href="icons/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
+<meta name="apple-mobile-web-app-title" content="Pills">
+<meta name="theme-color" content="#1E6F5C">
+<script>
+  var ARTIFACT = 'https://claude.ai/artifact/TsgidugrJpXbdkAGZeXHgb';
+  // Opened from the Home Screen icon (URL has ?go): jump straight to the schedule.
+  if (/[?&]go\b/.test(location.search)) location.replace(ARTIFACT);
+</script>
+<style>
+  body { margin: 0; min-height: 100vh; display: grid; place-items: center; background: #1E6F5C; color: #F4FBF8;
+         font-family: system-ui, -apple-system, "Segoe UI", sans-serif; text-align: center; }
+  main { display: grid; gap: 16px; justify-items: center; padding: 24px 16px; }
+  img { width: 120px; height: 120px; border-radius: 27px; box-shadow: 0 10px 30px rgba(0,0,0,.25); }
+  h1 { margin: 0; font-size: 1.8rem; }
+  ol { margin: 0; padding-left: 1.2rem; text-align: left; max-width: 30ch; line-height: 1.5; }
+  a { color: #1E6F5C; background: #F4FBF8; padding: 14px 28px; border-radius: 999px; font-weight: 600; text-decoration: none; }
+</style>
+</head>
+<body>
+<main>
+  <img src="icons/apple-touch-icon.png" width="120" height="120" alt="Pill Schedule icon">
+  <h1>Pill Schedule</h1>
+  <ol>
+    <li>Tap Share, then <b>Add to Home Screen</b>.</li>
+    <li>Tapping the new icon opens your Pill Schedule on claude.ai.</li>
+  </ol>
+  <a href="https://claude.ai/artifact/TsgidugrJpXbdkAGZeXHgb">Open Pill Schedule now</a>
+</main>
+<script>
+  // Make the address Safari saves to the Home Screen end in ?go, so the icon launches the schedule.
+  try { history.replaceState(null, '', location.pathname + '?go'); } catch (e) {}
+</script>
+</body>
+</html>
