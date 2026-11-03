@@ -50,7 +50,7 @@
   opens in Safari where the user is signed in to claude.ai. A Pages copy of the
   app itself is NOT acceptable (it would store entries only on the device).
   To use a custom icon, replace drink-log/icons/*.png (180, 192, 512 px, opaque).
-- A daily Routine ("Drink Log daily GitHub sync", trig_01PxrQHdaJYPQZonDaujtm7C)
-  fires once every 24 hours into this session (session_015TxFtoeTbvUGnAhqGBwvEB).
-  It reads the artifact's live HTML, extracts the entries-data JSON, writes it to
-  drink-log/data/entries.json, and commits + pushes only if the file changed.
+- Daily sync DISABLED (2026-11-03, at the user's request): the Routine
+  "Drink Log daily GitHub sync" (trig_01PxrQHdaJYPQZonDaujtm7C) still exists but
+  is turned off, so drink-log/data/entries.json is no longer updated
+  automatically. The artifact remains the only live copy of entries after that.
