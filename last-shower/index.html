@@ -1,0 +1,505 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Last Shower</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;1,9..144,500&family=Karla:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<style id="app-style">
+  :root {
+    --bg: #f4f1ea;
+    --bg-deep: #ece7dc;
+    --surface: #ffffff;
+    --text: #23302e;
+    --text-muted: #5c6e6a;
+    --accent: #1c8781;
+    --accent-strong: #106661;
+    --accent-soft: #d9ece9;
+    --border: #dcdfd3;
+    --shadow: 22deg 20% 30%;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #101817;
+      --bg-deep: #0a1211;
+      --surface: #17211f;
+      --text: #e9f1ee;
+      --text-muted: #93a8a3;
+      --accent: #57d6c9;
+      --accent-strong: #8ce8de;
+      --accent-soft: #1c3733;
+      --border: #263532;
+    }
+  }
+
+  :root[data-theme="dark"] {
+    --bg: #101817;
+    --bg-deep: #0a1211;
+    --surface: #17211f;
+    --text: #e9f1ee;
+    --text-muted: #93a8a3;
+    --accent: #57d6c9;
+    --accent-strong: #8ce8de;
+    --accent-soft: #1c3733;
+    --border: #263532;
+  }
+
+  * { box-sizing: border-box; }
+
+  html, body { margin: 0; padding: 0; }
+
+  body {
+    min-height: 100vh;
+    background: var(--bg);
+    color: var(--text);
+    font-family: "Karla", ui-sans-serif, system-ui, sans-serif;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem 1.25rem;
+    position: relative;
+    overflow-x: hidden;
+  }
+
+  .atmosphere {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    overflow: hidden;
+    pointer-events: none;
+  }
+
+  .drop {
+    position: absolute;
+    border-radius: 50%;
+    background: radial-gradient(circle at 35% 30%, var(--accent-soft), transparent 70%);
+    opacity: 0.55;
+    filter: blur(2px);
+  }
+
+  .drop.one   { width: 42vmax; height: 42vmax; top: -18vmax; right: -14vmax; }
+  .drop.two   { width: 26vmax; height: 26vmax; bottom: -12vmax; left: -10vmax; opacity: 0.4; }
+  .drop.three { width: 14vmax; height: 14vmax; top: 60%; right: 8%; opacity: 0.3; }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .drop { animation: drift 22s ease-in-out infinite alternate; }
+    .drop.two { animation-duration: 26s; }
+    .drop.three { animation-duration: 18s; }
+  }
+
+  @keyframes drift {
+    from { transform: translate(0, 0) scale(1); }
+    to   { transform: translate(1.5%, 2%) scale(1.04); }
+  }
+
+  main {
+    position: relative;
+    z-index: 1;
+    width: min(420px, 100%);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 22px;
+    padding: 2.75rem 2.25rem 2.25rem;
+    box-shadow: 0 1px 2px hsl(var(--shadow) / 0.06), 0 18px 40px -20px hsl(var(--shadow) / 0.35);
+    text-align: center;
+  }
+
+  .eyebrow {
+    margin: 0 0 1.5rem;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+  }
+
+  #countDisplay { min-height: 8.25rem; }
+
+  .count-row {
+    display: flex;
+    align-items: baseline;
+    justify-content: center;
+    gap: 0.5rem;
+    line-height: 1;
+    flex-wrap: wrap;
+  }
+
+  .count {
+    font-family: "Fraunces", Georgia, serif;
+    font-style: italic;
+    font-weight: 500;
+    font-size: clamp(4.5rem, 16vw, 6.5rem);
+    letter-spacing: -0.02em;
+    color: var(--text);
+    text-wrap: balance;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .count-unit {
+    font-size: 1.1rem;
+    font-weight: 500;
+    color: var(--text-muted);
+    padding-bottom: 0.6rem;
+  }
+
+  .count-word {
+    font-family: "Fraunces", Georgia, serif;
+    font-style: italic;
+    font-weight: 500;
+    font-size: clamp(2.4rem, 9vw, 3rem);
+    color: var(--text);
+  }
+
+  .since {
+    margin: 0.25rem 0 0;
+    color: var(--text-muted);
+    font-size: 0.95rem;
+  }
+
+  .example-tag {
+    display: inline-block;
+    font-size: 0.78rem;
+    font-style: italic;
+    color: var(--text-muted);
+    opacity: 0.8;
+  }
+
+  .divider {
+    height: 1px;
+    background: var(--border);
+    margin: 1.75rem 0;
+  }
+
+  .stamp {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 0.55rem;
+    margin: 0 0 2rem;
+    padding: 0.6rem 1rem;
+    background: var(--bg-deep);
+    border-radius: 10px;
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+  }
+
+  .stamp-day {
+    color: var(--text-muted);
+    font-size: 0.78rem;
+    letter-spacing: 0.04em;
+  }
+
+  .stamp-date {
+    color: var(--text);
+    font-size: 0.9rem;
+    font-weight: 500;
+  }
+
+  .log-btn {
+    appearance: none;
+    border: none;
+    width: 100%;
+    padding: 1rem 1.25rem;
+    border-radius: 12px;
+    background: var(--accent);
+    color: #04211f;
+    font-family: "Karla", ui-sans-serif, system-ui, sans-serif;
+    font-size: 1.02rem;
+    font-weight: 700;
+    letter-spacing: 0.01em;
+    cursor: pointer;
+    transition: background-color 0.15s ease, transform 0.1s ease;
+  }
+
+  .log-btn:hover { background: var(--accent-strong); }
+  .log-btn:active { transform: scale(0.98); }
+
+  .log-btn:disabled {
+    opacity: 0.55;
+    cursor: default;
+    transform: none;
+  }
+
+  .log-btn:focus-visible {
+    outline: 3px solid var(--accent-strong);
+    outline-offset: 3px;
+  }
+
+  .status {
+    margin: 0.9rem 0 0;
+    min-height: 1.1rem;
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0.02em;
+    color: var(--text-muted);
+  }
+
+  .status[data-tone="warn"] { color: var(--accent-strong); }
+
+  @media (prefers-reduced-motion: reduce) {
+    .log-btn { transition: none; }
+  }
+</style>
+</head>
+<body>
+<div class="atmosphere" aria-hidden="true"><div class="drop one"></div><div class="drop two"></div><div class="drop three"></div></div>
+<main>
+<p class="eyebrow">Last Shower</p>
+<div id="countDisplay"></div>
+<div class="divider"></div>
+<div class="stamp"><span class="stamp-day" id="stampDay">Last logged</span><span class="stamp-date" id="stampDate">&nbsp;</span></div>
+<button class="log-btn" id="logButton" type="button">I took a shower</button>
+<p class="status" id="status">&nbsp;</p>
+</main>
+
+<script type="application/json" id="seed">{"rev":0,"lastShower":null}</script>
+
+<script id="app-script">
+(function () {
+  var EXAMPLE_ISO = "2026-08-20";
+  var PENDING_KEY = "lastShower.pending";
+  var LOCAL_KEY = "lastShower.local";
+  var FONT_URL = "https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;1,9..144,500&family=Karla:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500&display=swap";
+
+  var BODY_MARKUP =
+    '<div class="atmosphere" aria-hidden="true"><div class="drop one"></div><div class="drop two"></div><div class="drop three"></div></div>\n' +
+    '<main>\n' +
+    '<p class="eyebrow">Last Shower</p>\n' +
+    '<div id="countDisplay"></div>\n' +
+    '<div class="divider"></div>\n' +
+    '<div class="stamp"><span class="stamp-day" id="stampDay">Last logged</span><span class="stamp-date" id="stampDate">&nbsp;</span></div>\n' +
+    '<button class="log-btn" id="logButton" type="button">I took a shower</button>\n' +
+    '<p class="status" id="status">&nbsp;</p>\n' +
+    '</main>';
+
+  var countDisplay = document.getElementById("countDisplay");
+  var stampDay = document.getElementById("stampDay");
+  var stampDate = document.getElementById("stampDate");
+  var logButton = document.getElementById("logButton");
+  var statusEl = document.getElementById("status");
+
+  var api = null;
+  var mode = "loading";
+  var dirty = false;
+  var retried = false;
+  var timer = null;
+
+  function todayISO() {
+    var d = new Date();
+    var y = d.getFullYear();
+    var m = String(d.getMonth() + 1).padStart(2, "0");
+    var day = String(d.getDate()).padStart(2, "0");
+    return y + "-" + m + "-" + day;
+  }
+
+  function daysBetween(a, b) {
+    return Math.round((new Date(b + "T00:00:00") - new Date(a + "T00:00:00")) / 86400000);
+  }
+
+  function relativeLabel(n) {
+    if (n <= 0) return "Today";
+    if (n === 1) return "Yesterday";
+    return n + " days ago";
+  }
+
+  function normalize(raw) {
+    var s = raw && typeof raw === "object" ? raw : {};
+    var rev = typeof s.rev === "number" && s.rev >= 0 ? s.rev : 0;
+    var last = typeof s.lastShower === "string" && /^\d{4}-\d{2}-\d{2}$/.test(s.lastShower) ? s.lastShower : null;
+    return { rev: rev, lastShower: last };
+  }
+
+  function readSeed() {
+    try { return normalize(JSON.parse(document.getElementById("seed").textContent)); }
+    catch (e) { return { rev: 0, lastShower: null }; }
+  }
+
+  function readPending() {
+    try {
+      var raw = sessionStorage.getItem(PENDING_KEY);
+      return raw ? normalize(JSON.parse(raw)) : null;
+    } catch (e) { return null; }
+  }
+
+  function writePending(s) {
+    try { sessionStorage.setItem(PENDING_KEY, JSON.stringify(s)); } catch (e) {}
+  }
+
+  function clearPending() {
+    try { sessionStorage.removeItem(PENDING_KEY); } catch (e) {}
+  }
+
+  // Fallback used ONLY where this page cannot save server-side (e.g. the
+  // static copy hosted on GitHub Pages, which has no Claude runtime).
+  function readLocal() {
+    try {
+      var raw = localStorage.getItem(LOCAL_KEY);
+      return raw ? normalize(JSON.parse(raw)) : null;
+    } catch (e) { return null; }
+  }
+
+  function writeLocal(s) {
+    try { localStorage.setItem(LOCAL_KEY, JSON.stringify(s)); } catch (e) {}
+  }
+
+  function adoptLocal() {
+    var local = readLocal();
+    if (local && local.rev > state.rev) { state = local; dirty = false; }
+  }
+
+  var state = readSeed();
+  var pending = readPending();
+  if (pending && pending.rev > state.rev) {
+    state = pending;
+    dirty = true;
+  } else {
+    clearPending();
+  }
+
+  function escapeHtml(str) {
+    return String(str).replace(/[&<>"']/g, function (c) {
+      return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c];
+    });
+  }
+
+  function buildDocument(s) {
+    var style = document.getElementById("app-style").textContent;
+    var code = document.getElementById("app-script").textContent;
+    return '<!doctype html>\n<html lang="en">\n<head>\n' +
+      '<meta charset="utf-8">\n' +
+      '<meta name="viewport" content="width=device-width, initial-scale=1">\n' +
+      '<title>Last Shower</title>\n' +
+      '<link rel="preconnect" href="https://fonts.googleapis.com">\n' +
+      '<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>\n' +
+      '<link href="' + escapeHtml(FONT_URL) + '" rel="stylesheet">\n' +
+      '<style id="app-style">' + style + '</style>\n' +
+      '</head>\n<body>\n' +
+      BODY_MARKUP + '\n' +
+      '<script type="application/json" id="seed">' + JSON.stringify(s) + '<\/script>\n' +
+      '<script id="app-script">' + code + '<\/script>\n' +
+      '</body>\n</html>\n';
+  }
+
+  function setStatus(text, tone) {
+    statusEl.textContent = text;
+    if (tone) statusEl.setAttribute("data-tone", tone);
+    else statusEl.removeAttribute("data-tone");
+  }
+
+  function refreshStatus() {
+    if (mode === "saving") return setStatus("Saving…");
+    if (mode === "server") return setStatus(dirty ? "Unsaved" : "Saved to your Claude account");
+    if (mode === "readonly") return setStatus("Read-only view — changes won't save", "warn");
+    if (mode === "error") return setStatus("Couldn't save — press again to retry", "warn");
+    if (mode === "local") return setStatus("Saved in this browser only", "warn");
+    return setStatus(" ");
+  }
+
+  function render() {
+    var today = todayISO();
+    var isExample = !state.lastShower;
+    var anchor = isExample ? EXAMPLE_ISO : state.lastShower;
+    var n = daysBetween(anchor, today);
+
+    stampDay.textContent = isExample ? "Example" : "Last logged";
+    stampDate.textContent = relativeLabel(n);
+
+    var suffix = isExample ? ' <span class="example-tag">(example — press the button below)</span>' : '';
+
+    if (n <= 0) {
+      countDisplay.innerHTML = '<div class="count-row"><span class="count-word">Today</span></div>' +
+        '<p class="since">You’re all fresh.' + suffix + '</p>';
+    } else if (n === 1) {
+      countDisplay.innerHTML = '<div class="count-row"><span class="count-word">Yesterday</span></div>' +
+        '<p class="since">One day and counting.' + suffix + '</p>';
+    } else {
+      countDisplay.innerHTML =
+        '<div class="count-row"><span class="count">' + n + '</span>' +
+        '<span class="count-unit">days ago</span></div>' +
+        '<p class="since">Might be time for another.' + suffix + '</p>';
+    }
+
+    logButton.disabled = (mode === "readonly");
+    refreshStatus();
+  }
+
+  function schedule(delay) {
+    clearTimeout(timer);
+    timer = setTimeout(commit, mode === "local" ? 0 : delay || 0);
+  }
+
+  function commit() {
+    if (mode === "readonly") return;
+    if (mode === "local") { writeLocal(state); dirty = false; refreshStatus(); return; }
+    publishNow();
+  }
+
+  function publishNow() {
+    if (!api || !dirty || mode === "readonly") return;
+    mode = "saving";
+    refreshStatus();
+    writePending(state);
+
+    api.publish(buildDocument(state)).then(function () {
+      // The shell reloads this view to the new version.
+    }, function (err) {
+      var code = err && err.code;
+      if (code === "conflict") return;              // shell reloads to the winner
+      if (code === "rate_limited") { mode = "server"; schedule(5000); refreshStatus(); return; }
+      if (code === "upstream_error" && !retried) {
+        retried = true;
+        mode = "server";
+        schedule(1500 + Math.random() * 1500);
+        refreshStatus();
+        return;
+      }
+      if (code === "not_writer" || code === "not_granted" || code === "not_declared" ||
+          code === "capability_disabled" || code === "capability_removed" || code === "consent_required") {
+        mode = "readonly";
+      } else {
+        mode = "error";
+      }
+      clearPending();
+      render();
+    });
+  }
+
+  logButton.addEventListener("click", function () {
+    var today = todayISO();
+    if (state.lastShower === today) return;
+    state = { rev: state.rev + 1, lastShower: today };
+    dirty = true;
+    retried = false;
+    if (mode === "error" || mode === "server") mode = "server";
+    render();
+    schedule(0);
+  });
+
+  render();
+
+  if (window.claude && typeof window.claude.use === "function") {
+    window.claude.use("artifact").then(function (ns) {
+      api = ns;
+      mode = ns ? "server" : "local";
+      if (!ns) adoptLocal();
+      render();
+      if (dirty) schedule(0);
+    }, function () {
+      mode = "local";
+      adoptLocal();
+      render();
+      if (dirty) schedule(0);
+    });
+  } else {
+    mode = "local";
+    adoptLocal();
+    render();
+    if (dirty) schedule(0);
+  }
+})();
+</script>
+
+</body>
+</html>
