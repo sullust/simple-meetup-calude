@@ -283,7 +283,7 @@ h1 {
   <header id="app-header">
     <p class="eyebrow">Bedtime 9:00 pm · count resets at midnight</p>
     <h1>Pill Schedule</h1>
-    <p class="subhead">Tap a pill when you take it. The remaining doses for the day are spaced evenly between that tap and 9:00 pm.</p>
+    <p class="subhead">Tap a pill when you take it. Tylenol and cephalexin doses left for the day are spaced evenly between that tap and 9:00 pm. Gabapentin is at 6:00 am and 6:00 pm.</p>
   </header>
 
   <script id="entries-data" type="application/json">[]</script>
@@ -301,7 +301,7 @@ h1 {
   var PILLS = [
     { id: 'tylenol',     name: 'Tylenol',     doses: 4 },
     { id: 'cephalexin',  name: 'Cephalexin',  doses: 4 },
-    { id: 'gabapentin',  name: 'Gabapentin',  doses: 3 }
+    { id: 'gabapentin',  name: 'Gabapentin',  doses: 2, times: [6, 18] } // fixed clock times (hours), not spaced
   ];
   var BY_ID = {};
   PILLS.forEach(function (p) { BY_ID[p.id] = p; });
@@ -387,12 +387,22 @@ h1 {
 
   // After each tap, the doses still owed today are spread evenly from that tap to 9:00 pm.
   // Returns { kind: 'first' | 'scheduled' | 'due' | 'done', at?: Date, gap?: ms, taken, doses }
+  function atHour(now, h) { return new Date(now.getFullYear(), now.getMonth(), now.getDate(), h, 0, 0, 0); }
+
   function nextDose(pill, now) {
     var today = todayDoses(pill.id, now);
     var taken = today.length;
     var base = { taken: taken, doses: pill.doses };
+    if (pill.times) {
+      // Fixed clock times: the next dose is simply the next slot not yet taken today.
+      if (taken >= pill.doses) return Object.assign({ kind: 'done', nextLabel: 'tomorrow ' + fmtTime(atHour(now, pill.times[0])) }, base);
+      var slot = atHour(now, pill.times[taken]);
+      var kind = slot.getTime() <= now.getTime() ? 'due' : 'scheduled';
+      var after = pill.times[taken + 1] !== undefined ? 'then ' + fmtTime(atHour(now, pill.times[taken + 1])) : 'last one today';
+      return Object.assign({ kind: kind, at: slot, gap: 0, after: after }, base);
+    }
     if (taken === 0) return Object.assign({ kind: 'first' }, base);
-    if (taken >= pill.doses) return Object.assign({ kind: 'done' }, base);
+    if (taken >= pill.doses) return Object.assign({ kind: 'done', nextLabel: 'tomorrow morning' }, base);
     var last = new Date(today[taken - 1].t);
     var bed = new Date(now.getFullYear(), now.getMonth(), now.getDate(), BEDTIME_HOUR, 0, 0, 0);
     var remaining = pill.doses - taken;
@@ -438,9 +448,10 @@ h1 {
       return '<p class="next">Next pill <span class="when">when you wake up</span></p>';
     }
     if (n.kind === 'done') {
-      return '<p class="next">Done for today · next pill <span class="when">tomorrow morning</span></p>';
+      return '<p class="next">Done for today · next pill <span class="when">' + escapeHtml(n.nextLabel) + '</span></p>';
     }
-    var meta = n.gap > 0 ? '<span class="meta">every ' + escapeHtml(fmtGap(n.gap)) + ' until 9:00 pm</span>' : '';
+    var meta = n.gap > 0 ? '<span class="meta">every ' + escapeHtml(fmtGap(n.gap)) + ' until 9:00 pm</span>'
+      : n.after ? '<span class="meta">' + escapeHtml(n.after) + '</span>' : '';
     if (n.kind === 'due') {
       return '<p class="next due">Next pill <span class="when">now</span>' +
         '<span class="meta">was due ' + escapeHtml(fmtTime(n.at)) + '</span></p>';
@@ -456,7 +467,9 @@ h1 {
       var done = n.kind === 'done';
       html += '<section class="med" style="--pill: var(--pill-' + p.id + ')">' +
         '<div class="med-head"><h2>' + escapeHtml(p.name) + '</h2>' +
-        '<span class="med-sub">' + p.doses + ' times daily</span></div>' +
+        '<span class="med-sub">' + (p.times
+          ? p.times.map(function (h) { return fmtTime(atHour(now, h)); }).join(' and ')
+          : p.doses + ' times daily') + '</span></div>' +
         renderDots(n) +
         '<button class="take' + (done ? ' done' : '') + '" type="button" data-action="take" data-pill="' + p.id + '" ' + dis + '>' +
           (done ? 'Took all ' + p.doses + ' today' : 'Take ' + escapeHtml(p.name)) + '</button>' +
