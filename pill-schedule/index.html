@@ -23,6 +23,7 @@
   --pill-tylenol: #B9412F;
   --pill-cephalexin: #1F6F8B;
   --pill-gabapentin: #8A6414;
+  --pill-injection: #5B4B8A;
   --font-body: "Atkinson Hyperlegible", "Helvetica Neue", Arial, sans-serif;
   --font-mono: "DM Mono", ui-monospace, "SF Mono", Menlo, monospace;
 }
@@ -45,6 +46,7 @@
     --pill-tylenol: #C9503D;
     --pill-cephalexin: #2A7F9C;
     --pill-gabapentin: #9A7320;
+    --pill-injection: #7F6FBF;
     color-scheme: dark;
   }
 }
@@ -66,6 +68,7 @@
   --pill-tylenol: #C9503D;
   --pill-cephalexin: #2A7F9C;
   --pill-gabapentin: #9A7320;
+  --pill-injection: #7F6FBF;
   color-scheme: dark;
 }
 
@@ -237,6 +240,8 @@ h1 {
 .next.due { color: var(--due); }
 .next.due .when { color: var(--due); font-weight: 500; }
 .next .meta { font-size: 0.82rem; color: var(--text-muted); }
+.next.since { font-size: 0.92rem; }
+.next.since .when { font-size: 0.98rem; }
 
 .card { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 18px 18px 14px; }
 .card h2 { font-size: 1.05rem; font-weight: 700; margin: 0 0 12px; }
@@ -281,9 +286,9 @@ h1 {
 </style>
 <div class="wrap">
   <header id="app-header">
-    <p class="eyebrow">Bedtime 9:00 pm · count resets at midnight</p>
+    <p class="eyebrow">Bedtime 9:00 pm · counts reset at midnight</p>
     <h1>Pill Schedule</h1>
-    <p class="subhead">Tap a pill when you take it. Tylenol and cephalexin doses left for the day are spaced evenly between that tap and 9:00 pm. Gabapentin is at 6:00 am and 6:00 pm.</p>
+    <p class="subhead">Tap a pill when you take it. Tylenol and cephalexin doses left for the day are spaced evenly between that tap and 9:00 pm. Gabapentin and the injection are at 6:00 am and 6:00 pm.</p>
   </header>
 
   <script id="entries-data" type="application/json">[]</script>
@@ -301,7 +306,8 @@ h1 {
   var PILLS = [
     { id: 'tylenol',     name: 'Tylenol',     doses: 4 },
     { id: 'cephalexin',  name: 'Cephalexin',  doses: 4 },
-    { id: 'gabapentin',  name: 'Gabapentin',  doses: 2, times: [6, 18] } // fixed clock times (hours), not spaced
+    { id: 'gabapentin',  name: 'Gabapentin',  doses: 2, times: [6, 18] }, // fixed clock times (hours), not spaced
+    { id: 'injection',   name: 'Injection',   doses: 2, times: [6, 18], noun: 'injection', verb: 'Log', sinceLast: true }
   ];
   var BY_ID = {};
   PILLS.forEach(function (p) { BY_ID[p.id] = p; });
@@ -443,20 +449,33 @@ h1 {
     return html;
   }
 
-  function renderNext(n) {
+  function renderNext(n, noun) {
     if (n.kind === 'first') {
-      return '<p class="next">Next pill <span class="when">when you wake up</span></p>';
+      return '<p class="next">Next ' + noun + ' <span class="when">when you wake up</span></p>';
     }
     if (n.kind === 'done') {
-      return '<p class="next">Done for today · next pill <span class="when">' + escapeHtml(n.nextLabel) + '</span></p>';
+      return '<p class="next">Done for today · next ' + noun + ' <span class="when">' + escapeHtml(n.nextLabel) + '</span></p>';
     }
     var meta = n.gap > 0 ? '<span class="meta">every ' + escapeHtml(fmtGap(n.gap)) + ' until 9:00 pm</span>'
       : n.after ? '<span class="meta">' + escapeHtml(n.after) + '</span>' : '';
     if (n.kind === 'due') {
-      return '<p class="next due">Next pill <span class="when">now</span>' +
+      return '<p class="next due">Next ' + noun + ' <span class="when">now</span>' +
         '<span class="meta">was due ' + escapeHtml(fmtTime(n.at)) + '</span></p>';
     }
-    return '<p class="next">Next pill at <time datetime="' + n.at.toISOString() + '">' + escapeHtml(fmtTime(n.at)) + '</time>' + meta + '</p>';
+    return '<p class="next">Next ' + noun + ' at <time datetime="' + n.at.toISOString() + '">' + escapeHtml(fmtTime(n.at)) + '</time>' + meta + '</p>';
+  }
+
+  // Time since the most recent entry of this kind, on any day.
+  function lastOf(pillId) {
+    var all = sorted(state.entries).filter(function (e) { return e.p === pillId; });
+    return all.length ? all[all.length - 1] : null;
+  }
+  function renderSince(p, now) {
+    var last = lastOf(p.id);
+    if (!last) return '<p class="next since">No ' + escapeHtml(p.noun) + ' logged yet</p>';
+    var ms = now.getTime() - new Date(last.t).getTime();
+    return '<p class="next since">Last ' + escapeHtml(p.noun) + ' <span class="when">' + escapeHtml(fmtGap(ms)) + ' ago</span>' +
+      '<span class="meta">' + escapeHtml(fmtTime(last.t)) + ' ' + escapeHtml(dayLabel(last.t).toLowerCase()) + '</span></p>';
   }
 
   function renderMeds(now) {
@@ -472,8 +491,9 @@ h1 {
           : p.doses + ' times daily') + '</span></div>' +
         renderDots(n) +
         '<button class="take' + (done ? ' done' : '') + '" type="button" data-action="take" data-pill="' + p.id + '" ' + dis + '>' +
-          (done ? 'Took all ' + p.doses + ' today' : 'Take ' + escapeHtml(p.name)) + '</button>' +
-        renderNext(n) +
+          (done ? 'All ' + p.doses + ' done today' : (p.verb || 'Take') + ' ' + escapeHtml(p.name)) + '</button>' +
+        renderNext(n, p.noun || 'pill') +
+        (p.sinceLast ? renderSince(p, now) : '') +
         '</section>';
     });
     return html + '</div>';
@@ -520,7 +540,7 @@ h1 {
       ? '<div class="banner"><span>🔒</span><span><strong>Read-only here.</strong> You can see this schedule, but only its owner can log pills.</span></div>'
       : '';
     var o = overallNext(now);
-    var strip = '<div class="strip' + (o.due ? ' due' : '') + '"><span class="strip-label">Next pill</span>' +
+    var strip = '<div class="strip' + (o.due ? ' due' : '') + '"><span class="strip-label">Next dose</span>' +
       '<span class="strip-value">' + escapeHtml(o.text) + '</span></div>';
     appEl.innerHTML = banner + strip + renderMeds(now) + renderLog();
   }
@@ -601,13 +621,15 @@ h1 {
     }
     pendingConfirm = null;
     busy = true;
+    var prevLast = pill.sinceLast ? lastOf(pillId) : null;
     var iso = now.toISOString();
     var prev = state.entries;
     state.entries = prev.concat([{ t: iso, p: pillId }]).slice(-MAX_ENTRIES);
     render();
     var n = nextDose(pill, now);
     var msg = pill.name + ' logged at ' + fmtTime(iso) +
-      (n.kind === 'scheduled' ? '. Next at ' + fmtTime(n.at) + '.' : n.kind === 'done' ? '. That is all for today.' : '.');
+      (n.kind === 'scheduled' ? '. Next at ' + fmtTime(n.at) + '.' : n.kind === 'done' ? '. That is all for today.' : '.') +
+      (prevLast ? ' ' + fmtGap(now.getTime() - new Date(prevLast.t).getTime()) + ' since the last one.' : '');
     save(msg, prev).then(function () {
       busy = false;
       if (!readOnly) render();
