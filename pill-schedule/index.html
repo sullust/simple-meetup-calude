@@ -288,7 +288,7 @@ h1 {
   <header id="app-header">
     <p class="eyebrow">Bedtime 9:00 pm · counts reset at midnight</p>
     <h1>Pill Schedule</h1>
-    <p class="subhead">Tap a pill when you take it. Tylenol and cephalexin doses left for the day are spaced evenly between that tap and 9:00 pm. Gabapentin and the injection are at 6:00 am and 6:00 pm.</p>
+    <p class="subhead">Tap when you take a dose. Cephalexin doses left for the day are spaced evenly between that tap and 9:00 pm. The injection is at 6:00 am and 6:00 pm.</p>
   </header>
 
   <script id="entries-data" type="application/json">[]</script>
@@ -304,11 +304,13 @@ h1 {
   var REPEAT_GUARD_MIN = 20;      // same pill within this many minutes asks for a second tap
   var CONFIRM_WINDOW_MS = 6000;
   var PILLS = [
-    { id: 'tylenol',     name: 'Tylenol',     doses: 4 },
+    // retired: no longer taken, so no card or button, but past entries still show in the log.
+    { id: 'tylenol',     name: 'Tylenol',     doses: 4, retired: true },
     { id: 'cephalexin',  name: 'Cephalexin',  doses: 4 },
-    { id: 'gabapentin',  name: 'Gabapentin',  doses: 2, times: [6, 18] }, // fixed clock times (hours), not spaced
+    { id: 'gabapentin',  name: 'Gabapentin',  doses: 2, times: [6, 18], retired: true }, // fixed clock times (hours), not spaced
     { id: 'injection',   name: 'Injection',   doses: 2, times: [6, 18], noun: 'injection', verb: 'Log', sinceLast: true }
   ];
+  var ACTIVE = PILLS.filter(function (p) { return !p.retired; });
   var BY_ID = {};
   PILLS.forEach(function (p) { BY_ID[p.id] = p; });
   var RENAMED = { aspirin: 'tylenol' }; // entries logged before the Tylenol correction
@@ -422,7 +424,7 @@ h1 {
   // The soonest thing to do across all pills, for the strip at the top.
   function overallNext(now) {
     var due = [], upcoming = [], firsts = [];
-    PILLS.forEach(function (p) {
+    ACTIVE.forEach(function (p) {
       var n = nextDose(p, now);
       if (n.kind === 'due') due.push({ pill: p, n: n });
       else if (n.kind === 'scheduled') upcoming.push({ pill: p, n: n });
@@ -481,7 +483,7 @@ h1 {
   function renderMeds(now) {
     var dis = (busy || readOnly) ? 'disabled' : '';
     var html = '<div class="meds">';
-    PILLS.forEach(function (p) {
+    ACTIVE.forEach(function (p) {
       var n = nextDose(p, now);
       var done = n.kind === 'done';
       html += '<section class="med" style="--pill: var(--pill-' + p.id + ')">' +
@@ -517,7 +519,8 @@ h1 {
       var asc = g.items.slice().reverse();
       var nth = {};
       asc.forEach(function (e) { counts[e.p] = (counts[e.p] || 0) + 1; nth[e.t + e.p] = counts[e.p]; });
-      var summary = PILLS.map(function (p) { return (counts[p.id] || 0) + '/' + p.doses + ' ' + p.name.slice(0, 3); }).join(' · ');
+      var summary = PILLS.filter(function (p) { return !p.retired || counts[p.id]; })
+        .map(function (p) { return (counts[p.id] || 0) + '/' + p.doses + ' ' + p.name.slice(0, 3); }).join(' · ');
       html += '<div class="day-group"><p class="day-label"><span>' + escapeHtml(g.label) + '</span><span>' + escapeHtml(summary) + '</span></p>';
       g.items.forEach(function (e) {
         var p = BY_ID[e.p];
@@ -608,7 +611,7 @@ h1 {
   function takePill(pillId) {
     if (busy || readOnly) return;
     var pill = BY_ID[pillId];
-    if (!pill) return;
+    if (!pill || pill.retired) return;
     var now = new Date();
     var today = todayDoses(pillId, now);
     var last = today.length ? new Date(today[today.length - 1].t) : null;

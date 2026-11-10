@@ -75,12 +75,14 @@
   (https://claude.ai/artifact/TsgidugrJpXbdkAGZeXHgb) using the `artifact`
   capability, same as the drink log. Source: pill-schedule/index.html.
   Distinct from the pill tracker (which is a craving log). One button per
-  medication: Tylenol 4x/day, Cephalexin 4x/day, Gabapentin 2x/day. For
-  Tylenol and Cephalexin, after each tap the doses still owed that day are
-  spaced evenly from the tap to 9:00 pm bedtime (last dose lands at 9 pm).
-  Gabapentin and the Injection are at fixed clock times, 6:00 am and 6:00 pm
-  (`times: [6, 18]` in PILLS); the Injection card also shows the time since
-  the last injection. The count resets at local midnight with no carry-over.
+  active medication: Cephalexin 4x/day and the Injection 2x/day. For
+  Cephalexin, after each tap the doses still owed that day are spaced evenly
+  from the tap to 9:00 pm bedtime (last dose lands at 9 pm). The Injection is
+  at fixed clock times, 6:00 am and 6:00 pm (`times: [6, 18]` in PILLS), and
+  its card shows the time since the last injection. Tylenol and Gabapentin
+  are `retired: true` in PILLS (no card or button since 2026-11-10) but their
+  past entries still show in the log. The count resets at local midnight
+  with no carry-over.
   Entries are `{t: ISO, p: 'tylenol'|'cephalexin'|'gabapentin'|'injection'}`.
   A repeat tap of the same pill within 20 minutes asks for a second tap.
   Entries saved under the old id `aspirin` are read as `tylenol`.
